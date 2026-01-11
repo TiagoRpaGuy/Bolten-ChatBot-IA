@@ -1,0 +1,5 @@
+{
+  "name": "Bolten Proposal Configurator",
+  "description": "Advanced proposal configuration tool with real-time margin calculation, plan selection, and feature dependencies.",
+  "requestFramePermissions": []
+}
