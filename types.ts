@@ -1,55 +1,71 @@
 /**
- * PROPOSAL CONFIGURATOR - TYPES
- * White Label + Value-Based Pricing + Technical Customization
+ * PROPOSAL CONFIGURATOR - TYPES v4.0
+ * UX Refinement: Rich List Items + Tooltips
  */
 
 // ========================================
-// WHITE LABEL CONFIGURATION
+// SYSTEM CONFIG
 // ========================================
 export const SYSTEM_CONFIG = {
   name: "CRM Partner",
   tagline: "Plataforma de Vendas Inteligente",
-  primaryColor: "#2563eb",
 } as const;
 
 // ========================================
-// FINANCIAL GUARDRAILS
+// PARTNERSHIP MODELS
+// ========================================
+export type PartnershipModel = "whitelabel" | "partner";
+
+export const PARTNERSHIP_MODELS = {
+  whitelabel: { label: "White Label", commission: 1.0 },
+  partner: { label: "Parceiro 70%", commission: 0.70, boltenFee: 0.30 },
+} as const;
+
+// ========================================
+// FINANCIAL RULES
 // ========================================
 export const FINANCIAL_RULES = {
-  MIN_SETUP_VALUE: 500,
-  VALUE_SHARE_PERCENTAGE: 10,
-  HIGH_TICKET_THRESHOLD: 30,
-  DEFAULT_CONVERSION_IMPROVEMENT: 20,
-  MIN_CONVERSION_IMPROVEMENT: 5,
-  MAX_CONVERSION_IMPROVEMENT: 50,
+  SETUP_BASE_WA_AI: 500,
+  SETUP_ADDON_PER_FEATURE: 150,
+  MIN_SETUP: 500,
 } as const;
 
 // ========================================
-// ENUMS & BASIC TYPES
+// INTERNAL PRICING
+// ========================================
+export const INTERNAL_PRICING = {
+  CRM_PER_USER: 20,
+  AI_AGENT: 60,
+  CONVERSIONS: 20,
+} as const;
+
+// ========================================
+// BASIC TYPES
 // ========================================
 export type PlanLevel = "start" | "pro" | "enterprise";
 export type ThemeMode = "light" | "dark";
-export type ActiveTab = "config" | "roi";
-export type DomainOption = "default" | "custom";
-export type BrandingOption = "standard" | "whitelabel";
 
 // ========================================
-// TECHNICAL CUSTOMIZATION OPTIONS
+// TOOLTIPS (AJUDA VISUAL)
 // ========================================
-export interface TechnicalCustomization {
-  domain: DomainOption;
-  branding: BrandingOption;
-}
+export const FEATURE_TOOLTIPS = {
+  crm: "Gestão de leads, pipeline e funil de vendas completo.",
+  whatsapp: "API oficial do WhatsApp para mensagens automáticas.",
+  ai: "Agente de IA 24h para qualificar e responder leads. Requer WhatsApp.",
+  conversions: "Tracking avançado de conversões e attribution.",
+} as const;
 
-export const DOMAIN_OPTIONS = [
-  { id: "default", label: "Domínio Padrão da Agência", description: "Sem custo extra", cost: 0 },
-  { id: "custom", label: "Domínio Personalizado", description: "URL exclusiva do cliente", cost: 200 },
-];
+export const ROI_TOOLTIPS = {
+  ticketMedio: "Valor médio de cada venda fechada pelo cliente.",
+  leadsPerMonth: "Quantidade de oportunidades que entram no funil por mês.",
+  conversionRate: "Porcentagem atual de leads que viram clientes.",
+  improvement: "Melhoria esperada na taxa de conversão com a ferramenta.",
+} as const;
 
-export const BRANDING_OPTIONS = [
-  { id: "standard", label: "Layout Padrão", description: "Interface padrão do sistema", cost: 0 },
-  { id: "whitelabel", label: "White Label Completo", description: "Cores e logo do cliente", cost: 500 },
-];
+export const PRICE_TOOLTIPS = {
+  setup: "Taxa única de adesão (implementação + treinamento + setup técnico).",
+  monthly: "Valor mensal recorrente da assinatura do software.",
+} as const;
 
 // ========================================
 // USER TIERS
@@ -57,115 +73,48 @@ export const BRANDING_OPTIONS = [
 export interface UserTier {
   id: string;
   label: string;
-  minUsers: number;
   maxUsers: number;
   linkedPlan: PlanLevel;
 }
 
 export const USER_TIERS: UserTier[] = [
-  { id: "tier_5", label: "Até 5 usuários", minUsers: 1, maxUsers: 5, linkedPlan: "start" },
-  { id: "tier_10", label: "Até 10 usuários", minUsers: 6, maxUsers: 10, linkedPlan: "start" },
-  { id: "tier_20", label: "Até 20 usuários", minUsers: 11, maxUsers: 20, linkedPlan: "pro" },
-  { id: "tier_30", label: "Até 30 usuários", minUsers: 21, maxUsers: 30, linkedPlan: "pro" },
-  { id: "tier_50", label: "Até 50 usuários", minUsers: 31, maxUsers: 50, linkedPlan: "enterprise" },
-  { id: "tier_unlimited", label: "Ilimitado", minUsers: 51, maxUsers: 999, linkedPlan: "enterprise" },
+  { id: "tier_5", label: "Até 5 usuários", maxUsers: 5, linkedPlan: "start" },
+  { id: "tier_10", label: "Até 10 usuários", maxUsers: 10, linkedPlan: "start" },
+  { id: "tier_20", label: "Até 20 usuários", maxUsers: 20, linkedPlan: "pro" },
+  { id: "tier_30", label: "Até 30 usuários", maxUsers: 30, linkedPlan: "pro" },
+  { id: "tier_50", label: "Até 50 usuários", maxUsers: 50, linkedPlan: "enterprise" },
+  { id: "tier_100", label: "Até 100 usuários", maxUsers: 100, linkedPlan: "enterprise" },
 ];
 
-// ========================================
-// PLAN PRESETS
-// ========================================
-export interface PlanPreset {
-  tierId: string;
-  features: Partial<FeatureState>;
-  description: string;
-}
-
-export const PLAN_PRESETS: Record<PlanLevel, PlanPreset> = {
-  start: { tierId: "tier_5", features: { crm: true, whatsapp: true, ai: false, conversions: false }, description: "Pequenas equipes" },
-  pro: { tierId: "tier_20", features: { crm: true, whatsapp: true, ai: false, conversions: true }, description: "Times em crescimento" },
-  enterprise: { tierId: "tier_50", features: { crm: true, whatsapp: true, ai: true, conversions: true }, description: "Solução completa" },
+export const PLAN_PRESETS: Record<PlanLevel, { tierId: string; features: FeatureState }> = {
+  start: { tierId: "tier_5", features: { crm: true, whatsapp: true, ai: false, conversions: false } },
+  pro: { tierId: "tier_20", features: { crm: true, whatsapp: true, ai: false, conversions: true } },
+  enterprise: { tierId: "tier_50", features: { crm: true, whatsapp: true, ai: true, conversions: true } },
 };
 
 // ========================================
-// PRICING
+// SERVICES + COMPLEXITY (RICH LIST ITEMS)
 // ========================================
-export const INTERNAL_PRICING = {
-  CRM_PER_USER: 20.0,
-  AI_AGENT: 60.0,
-  CONVERSIONS: 20.0,
-  WHATSAPP: 0.0,
-} as const;
-
-// ========================================
-// COMPLEXITY FACTORS
-// ========================================
-export interface ComplexityFactor {
+export interface ServiceItem {
   id: string;
   label: string;
-  percentage: number;
   description: string;
-}
-
-export const COMPLEXITY_FACTORS: ComplexityFactor[] = [
-  { id: "presencial", label: "Reuniões Presenciais", percentage: 10, description: "Atendimento presencial" },
-  { id: "urgencia", label: "Urgência na Entrega", percentage: 15, description: "Prazo reduzido" },
-  { id: "suporte", label: "Suporte Estendido", percentage: 20, description: "SLA premium 24h" },
-];
-
-// ========================================
-// SERVICES
-// ========================================
-export interface ServiceInfo {
   cost: number;
-  label: string;
-  description: string;
-  icon: string;
-  required?: boolean;
+  costType: "fixed" | "percent";
+  required: boolean;
+  category: "service" | "complexity";
 }
 
-export const SERVICE_DETAILS: Record<string, ServiceInfo> = {
-  onboarding: { cost: 500, label: "Setup Técnico", description: "Configuração inicial obrigatória", icon: "rocket_launch", required: true },
-  training: { cost: 1500, label: "Treinamento", description: "2h de call + materiais", icon: "school" },
-  migration: { cost: 1000, label: "Migração de Dados", description: "Importação completa", icon: "database" },
-};
-
-export const SERVICE_COSTS = {
-  onboarding: SERVICE_DETAILS.onboarding.cost,
-  training: SERVICE_DETAILS.training.cost,
-  migration: SERVICE_DETAILS.migration.cost,
-} as const;
-
-// ========================================
-// TOOLTIPS
-// ========================================
-export const FEATURE_TOOLTIPS: Record<string, { title: string; description: string }> = {
-  crm: { title: "CRM & Pipeline", description: "Gestão completa de leads e oportunidades." },
-  whatsapp: { title: "WhatsApp Oficial", description: "API oficial do WhatsApp Business." },
-  ai: { title: "Agente de IA", description: "Assistente virtual 24/7. Requer WhatsApp." },
-  conversions: { title: "Conversões", description: "Rastreamento e attribution." },
-};
-
-export const SERVICE_TOOLTIPS: Record<string, { title: string; description: string }> = {
-  onboarding: { title: "Setup Técnico", description: "Configuração obrigatória do ambiente." },
-  training: { title: "Treinamento", description: "Sessão de 2h com gravação." },
-  migration: { title: "Migração", description: "Importação dos dados atuais." },
-};
-
-export const ROI_TOOLTIPS: Record<string, { title: string; description: string }> = {
-  ticketMedio: { title: "Ticket Médio", description: "Valor médio de cada venda." },
-  leadsPerMonth: { title: "Leads/Mês", description: "Oportunidades mensais." },
-  currentConversionRate: { title: "Taxa Atual", description: "% de leads que viram clientes." },
-  conversionImprovement: { title: "Melhoria Estimada", description: "Aumento esperado na conversão." },
-};
-
-// ========================================
-// TUTORIAL
-// ========================================
-export const TUTORIAL_STEPS = [
-  { icon: "tune", title: "Configure a Infraestrutura", description: "Selecione plano e funcionalidades." },
-  { icon: "insights", title: "Prove o Valor com ROI", description: "Use a calculadora de retorno." },
-  { icon: "calculate", title: "Ajuste a Margem", description: "Configure margem e complexidade." },
-  { icon: "picture_as_pdf", title: "Exporte o PDF", description: "Gere o link e exporte." },
+export const SERVICES_LIST: ServiceItem[] = [
+  // Serviços de Implementação
+  { id: "onboarding", label: "Setup Técnico", description: "Instalação, configuração e integração com sistemas existentes.", cost: 500, costType: "fixed", required: true, category: "service" },
+  { id: "training", label: "Treinamento", description: "Sessão de 2h ao vivo + gravação + material de apoio.", cost: 1500, costType: "fixed", required: false, category: "service" },
+  { id: "migration", label: "Migração de Dados", description: "Importação de leads, clientes e histórico do CRM anterior.", cost: 1000, costType: "fixed", required: false, category: "service" },
+  
+  // Fatores de Complexidade
+  { id: "urgencia", label: "Urgência na Entrega", description: "Prioridade máxima na fila, entrega em até 48h.", cost: 15, costType: "percent", required: false, category: "complexity" },
+  { id: "presencial", label: "Reuniões Presenciais", description: "Atendimento in-loco para kickoff e treinamento.", cost: 10, costType: "percent", required: false, category: "complexity" },
+  { id: "suporte", label: "Suporte Premium", description: "SLA de 2h para resposta, canal direto no WhatsApp.", cost: 20, costType: "percent", required: false, category: "complexity" },
 ];
 
 // ========================================
@@ -175,9 +124,6 @@ export interface ClientData {
   companyName: string;
   contactName: string;
   email: string;
-  phone: string;
-  sector: string;
-  origin: string;
 }
 
 export interface FeatureState {
@@ -187,161 +133,132 @@ export interface FeatureState {
   conversions: boolean;
 }
 
-export interface ServiceState {
-  onboarding: boolean;
-  training: boolean;
-  migration: boolean;
-}
-
-export interface ComplexityState {
-  presencial: boolean;
-  urgencia: boolean;
-  suporte: boolean;
-}
-
-export interface PricingConfig {
-  baseCost: number;
-  markupPercentage: number;
-  complexityFactors: ComplexityState;
-  manualOverride: number | null;
-  stripeCheckoutUrl?: string;
-}
-
 export interface ROIInputs {
   ticketMedio: number;
   leadsPerMonth: number;
-  currentConversionRate: number;
-  conversionImprovement: number;
+  conversionRate: number;
+  improvementPercent: number;
 }
 
-export interface ROIOutputs {
-  currentRevenue: number;
-  projectedRevenue: number;
-  recoveredRevenue: number;
-  conversionLift: number;
-  newConversionRate: number;
-}
-
-export interface ValuePricingResult {
-  costPlusPrice: number;
-  valueSuggestedPrice: number;
-  isHighTicketOpportunity: boolean;
-  priceDifferencePercent: number;
-}
-
-// J-Curve Timeline Data
-export interface JCurvePoint {
+export interface PaybackPoint {
   month: number;
-  label: string;
-  cumulativeValue: number;
+  balance: number;
   isPositive: boolean;
 }
 
-export interface ProposalData {
-  proposalId: string;
-  createdAt: string;
-  validUntil: string;
-  client: ClientData;
-  plan: PlanLevel;
-  selectedTierId: string;
-  userCount: number;
-  features: FeatureState;
-  services: ServiceState;
-  technicalCustomization: TechnicalCustomization;
-  pricing: PricingConfig;
-  roiInputs?: ROIInputs;
-  roiOutputs?: ROIOutputs;
-  valuePricing?: ValuePricingResult;
-  calculations: {
-    setupTotal: number;
-    monthlyRecurring: number;
-    finalPrice: number;
+// ========================================
+// PURE CALCULATION FUNCTIONS
+// ========================================
+
+export function calculateDynamicSetup(features: FeatureState): number {
+  let setup = FINANCIAL_RULES.MIN_SETUP;
+  if (features.whatsapp && features.ai) {
+    setup = FINANCIAL_RULES.SETUP_BASE_WA_AI;
+  }
+  if (features.crm) setup += FINANCIAL_RULES.SETUP_ADDON_PER_FEATURE;
+  if (features.conversions) setup += FINANCIAL_RULES.SETUP_ADDON_PER_FEATURE;
+  return Math.max(setup, FINANCIAL_RULES.MIN_SETUP);
+}
+
+export function calculateInternalCost(features: FeatureState, maxUsers: number): number {
+  let cost = 0;
+  if (features.crm) cost += INTERNAL_PRICING.CRM_PER_USER * maxUsers;
+  if (features.ai) cost += INTERNAL_PRICING.AI_AGENT;
+  if (features.conversions) cost += INTERNAL_PRICING.CONVERSIONS;
+  return cost;
+}
+
+export function calculateServicesTotal(selectedIds: string[]): number {
+  if (!Array.isArray(selectedIds)) return 0;
+  let total = 0;
+  for (const id of selectedIds) {
+    const svc = SERVICES_LIST.find(s => s.id === id && s.costType === 'fixed');
+    if (svc) total += svc.cost;
+  }
+  return total;
+}
+
+export function calculateComplexityPercent(selectedIds: string[]): number {
+  if (!Array.isArray(selectedIds)) return 0;
+  let pct = 0;
+  for (const id of selectedIds) {
+    const svc = SERVICES_LIST.find(s => s.id === id && s.costType === 'percent');
+    if (svc) pct += svc.cost;
+  }
+  return pct;
+}
+
+export function calculateFinalPrice(base: number, markupPct: number, complexityPct: number): number {
+  const withMarkup = base * (1 + markupPct / 100);
+  const withComplexity = withMarkup * (1 + complexityPct / 100);
+  return Math.ceil(withComplexity / 10) * 10;
+}
+
+export function calculateROI(inputs: ROIInputs) {
+  const ticket = Math.max(0, inputs.ticketMedio || 0);
+  const leads = Math.max(0, inputs.leadsPerMonth || 0);
+  const rate = Math.max(0, Math.min(100, inputs.conversionRate || 0));
+  const improvement = Math.max(0, inputs.improvementPercent || 0);
+  
+  const currentSales = leads * (rate / 100);
+  const currentRevenue = currentSales * ticket;
+  
+  const newRate = rate * (1 + improvement / 100);
+  const newSales = leads * (newRate / 100);
+  const newRevenue = newSales * ticket;
+  
+  return {
+    currentRevenue: Math.round(currentRevenue),
+    newRevenue: Math.round(newRevenue),
+    recoveredRevenue: Math.round(newRevenue - currentRevenue),
+    newConversionRate: Math.round(newRate * 10) / 10,
   };
 }
 
-// ========================================
-// HELPER FUNCTIONS
-// ========================================
-export const calculateInternalCost = (features: FeatureState, tierMaxUsers: number): number => {
-  let cost = 0;
-  if (features.crm) cost += INTERNAL_PRICING.CRM_PER_USER * Math.min(tierMaxUsers, 100);
-  if (features.ai && features.whatsapp) cost += INTERNAL_PRICING.AI_AGENT;
-  if (features.conversions) cost += INTERNAL_PRICING.CONVERSIONS;
-  return cost;
-};
+export function calculateProfit(model: PartnershipModel, salePrice: number, internalCost: number) {
+  if (model === "whitelabel") {
+    return { yourProfit: salePrice - internalCost, boltenFee: 0 };
+  }
+  return { yourProfit: salePrice * 0.70, boltenFee: salePrice * 0.30 };
+}
 
-export const calculateServicesTotal = (services: ServiceState): number => {
-  let total = 0;
-  if (services.onboarding) total += SERVICE_COSTS.onboarding;
-  if (services.training) total += SERVICE_COSTS.training;
-  if (services.migration) total += SERVICE_COSTS.migration;
-  return Math.max(total, FINANCIAL_RULES.MIN_SETUP_VALUE);
-};
-
-export const calculateCustomizationCost = (customization: TechnicalCustomization): number => {
-  let cost = 0;
-  const domain = DOMAIN_OPTIONS.find(d => d.id === customization.domain);
-  const branding = BRANDING_OPTIONS.find(b => b.id === customization.branding);
-  if (domain) cost += domain.cost;
-  if (branding) cost += branding.cost;
-  return cost;
-};
-
-export const calculateComplexityMultiplier = (factors: ComplexityState): number => {
-  let multiplier = 0;
-  COMPLEXITY_FACTORS.forEach(f => {
-    if (factors[f.id as keyof ComplexityState]) multiplier += f.percentage;
-  });
-  return multiplier;
-};
-
-export const calculateFinalPrice = (baseCost: number, markupPercent: number, complexityMultiplier: number): number => {
-  const withMarkup = baseCost * (1 + markupPercent / 100);
-  const withComplexity = withMarkup * (1 + complexityMultiplier / 100);
-  return Math.ceil(withComplexity / 10) * 10;
-};
-
-export const calculateROI = (inputs: ROIInputs): ROIOutputs => {
-  const { ticketMedio, leadsPerMonth, currentConversionRate, conversionImprovement } = inputs;
-  const currentSales = leadsPerMonth * (currentConversionRate / 100);
-  const currentRevenue = currentSales * ticketMedio;
-  const newConversionRate = currentConversionRate * (1 + conversionImprovement / 100);
-  const projectedSales = leadsPerMonth * (newConversionRate / 100);
-  const projectedRevenue = projectedSales * ticketMedio;
-  return { currentRevenue, projectedRevenue, recoveredRevenue: projectedRevenue - currentRevenue, conversionLift: conversionImprovement, newConversionRate };
-};
-
-export const calculateValuePricing = (costPlusPrice: number, recoveredRevenue: number): ValuePricingResult => {
-  const valueSuggestedPrice = Math.ceil((recoveredRevenue * FINANCIAL_RULES.VALUE_SHARE_PERCENTAGE / 100) / 10) * 10;
-  const priceDifferencePercent = costPlusPrice > 0 ? Math.round(((valueSuggestedPrice - costPlusPrice) / costPlusPrice) * 100) : 0;
-  return { costPlusPrice, valueSuggestedPrice, isHighTicketOpportunity: priceDifferencePercent > FINANCIAL_RULES.HIGH_TICKET_THRESHOLD, priceDifferencePercent };
-};
-
-// J-Curve Calculator: ROI Timeline over 12 months
-export const calculateJCurve = (setupCost: number, monthlySoftwareCost: number, monthlyRecoveredRevenue: number): JCurvePoint[] => {
-  const points: JCurvePoint[] = [];
-  let cumulative = -setupCost; // Mês 0: Apenas o custo de setup (negativo)
+/**
+ * Gráfico de LUCRO ACUMULADO (Saldo do Cliente)
+ * Mês 0: -Setup
+ * Mês N: Anterior + (ROI Mensal - Mensalidade)
+ */
+export function calculateCumulativeProfit(
+  setupCost: number,
+  monthlyPrice: number,
+  monthlyROI: number
+): PaybackPoint[] {
+  const setup = Math.max(500, setupCost || 500);
+  const price = Math.max(0, monthlyPrice || 0);
+  const roi = Math.max(0, monthlyROI || 0);
+  
+  const points: PaybackPoint[] = [];
+  let balance = -setup;
   
   for (let month = 0; month <= 12; month++) {
-    if (month === 0) {
-      points.push({ month, label: 'Mês 0', cumulativeValue: cumulative, isPositive: cumulative >= 0 });
-    } else {
-      // Cada mês: adiciona receita recuperada e subtrai custo do software
-      const netMonthly = monthlyRecoveredRevenue - monthlySoftwareCost;
-      cumulative += netMonthly;
-      points.push({ month, label: `Mês ${month}`, cumulativeValue: cumulative, isPositive: cumulative >= 0 });
+    if (month > 0) {
+      balance += (roi - price);
     }
+    points.push({
+      month,
+      balance: Math.round(balance),
+      isPositive: balance >= 0,
+    });
   }
+  
   return points;
-};
+}
 
-export const findPaybackMonth = (jCurveData: JCurvePoint[]): number | null => {
-  const paybackPoint = jCurveData.find((point, index) => index > 0 && point.isPositive);
-  return paybackPoint ? paybackPoint.month : null;
-};
+export function findPaybackMonth(points: PaybackPoint[]): number | null {
+  const found = points.find(p => p.month > 0 && p.isPositive);
+  return found?.month ?? null;
+}
 
-export const generateProposalId = (): string => {
-  const timestamp = Date.now().toString(36);
-  const random = Math.random().toString(36).substring(2, 8);
-  return `PROP-${timestamp}-${random}`.toUpperCase();
-};
+export function calculateYearlyProfit(points: PaybackPoint[]): number {
+  if (!points || points.length === 0) return 0;
+  return points[points.length - 1]?.balance || 0;
+}

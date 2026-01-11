@@ -1,18 +1,18 @@
-/* Proposal Configurator - Global Styles */
+/* Proposal Configurator v3.0 - Bulletproof Edition */
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 .animate-fadeIn { animation: fadeIn 0.2s ease-out; }
 
-/* Custom scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
 
-/* Number input without arrows */
+/* Remove number input arrows */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 input[type="number"] { -moz-appearance: textfield; }
@@ -21,129 +21,103 @@ input[type="number"] { -moz-appearance: textfield; }
 input[type="range"] { height: 6px; border-radius: 3px; cursor: pointer; }
 
 /* ========================================
-   PRINT / PDF STYLES - CRITICAL FIX
+   A4 PAGE STRICT LAYOUT
+   ======================================== */
+.a4-page {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 15mm;
+  margin: 0 auto;
+  background: white;
+  color: black;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* CSS NATIVE BAR CHART */
+.css-bar-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 120px;
+  gap: 4px;
+  padding: 0 8px;
+}
+
+.css-bar {
+  flex: 1;
+  max-width: 24px;
+  min-height: 4px;
+  border-radius: 2px 2px 0 0;
+  transition: height 0.3s ease;
+}
+
+.css-bar-negative {
+  background: linear-gradient(to top, #ef4444, #f87171);
+}
+
+.css-bar-positive {
+  background: linear-gradient(to top, #22c55e, #4ade80);
+}
+
+/* ========================================
+   PRINT STYLES - A4 STRICT
    ======================================== */
 @media print {
-  /* RESET CRÍTICO: Remover restrições de altura/overflow */
-  html, body, #root, .app-container, [data-print-container] {
-    height: auto !important;
-    min-height: auto !important;
-    max-height: none !important;
-    overflow: visible !important;
-    background: white !important;
-    color: black !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  /* Força cores de fundo no print */
+  /* Force color printing */
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     color-adjust: exact !important;
   }
 
-  /* OCULTAR: Sidebars, Navegação, Botões, Painel de Config */
-  .no-print,
-  nav,
-  nav *,
-  button:not([data-print-btn]),
-  input,
-  select,
-  .lg\:col-span-3,
-  .lg\:col-span-5,
-  [class*="col-span-3"],
-  [class*="col-span-5"],
-  header,
-  footer,
-  .sidebar,
-  .config-panel {
-    display: none !important;
+  /* Page setup */
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  /* Hide EVERYTHING first */
+  body * {
     visibility: hidden !important;
-    width: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
   }
 
-  /* Container principal ocupa 100% */
-  main, .main-content, .print-content {
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  /* Cards que NÃO devem quebrar no meio */
-  .print-card,
-  .print-break-inside-avoid,
-  [data-print-card] {
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
-    -webkit-column-break-inside: avoid !important;
-  }
-
-  /* Seção de Investimento: SEMPRE em página nova */
-  .print-investment,
-  [data-print-investment] {
-    break-before: page !important;
-    page-break-before: always !important;
-  }
-
-  /* Garantir que a proposta visível apareça */
-  .print-visible {
-    display: block !important;
+  /* Show ONLY the A4 page and its children */
+  .a4-page,
+  .a4-page * {
     visibility: visible !important;
-    width: 100% !important;
-    height: auto !important;
   }
 
-  /* Remover sombras */
-  .shadow-xl, .shadow-lg, .shadow-md, .shadow {
+  /* Position A4 page for print */
+  .a4-page {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    min-height: auto !important;
+    padding: 10mm !important;
+    margin: 0 !important;
     box-shadow: none !important;
   }
 
-  /* Gradientes visíveis */
-  .bg-gradient-to-r, .bg-gradient-to-l {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
+  /* Hide print button explicitly */
+  .no-print-button,
+  button {
+    display: none !important;
+    visibility: hidden !important;
   }
 
-  /* Configuração A4 */
-  @page {
-    size: A4 portrait;
-    margin: 1.5cm;
+  /* Prevent page breaks inside cards */
+  .print-no-break {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
   }
-
-  @page :first {
-    margin-top: 0.5cm;
-  }
-
-  /* Bordas arredondadas consistentes */
-  .rounded-xl { border-radius: 0.75rem !important; }
-  .rounded-lg { border-radius: 0.5rem !important; }
-  .rounded-2xl { border-radius: 1rem !important; }
-
-  /* Texto legível */
-  p, span, div, h1, h2, h3, h4, h5, h6 {
-    orphans: 3;
-    widows: 3;
-  }
-
-  /* Links sem decoração */
-  a { text-decoration: none !important; color: inherit !important; }
 }
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-}
-
-/* J-Curve Chart Bars */
-.j-curve-bar {
-  transition: all 0.3s ease;
-}
-.j-curve-bar:hover {
-  transform: scaleY(1.05);
-  filter: brightness(1.1);
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
