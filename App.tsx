@@ -289,15 +289,14 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
             capacidade para <strong>{tier.label}</strong>.
           </p>
           
-          {/* TABELA DE FUNCIONALIDADES COM PREÇOS */}
+          {/* TABELA DE FUNCIONALIDADES (SEM PREÇOS) */}
           <div className="border border-gray-200 rounded-lg overflow-hidden">
             <table className="w-full text-sm">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="text-left p-3 font-semibold text-gray-700">Funcionalidade</th>
-                  <th className="text-left p-3 font-semibold text-gray-700">Descrição</th>
-                  <th className="text-right p-3 font-semibold text-gray-700">Valor</th>
-                  <th className="text-center p-3 font-semibold text-gray-700">Status</th>
+                  <th className="text-left p-3 font-semibold text-gray-700 w-1/3">Funcionalidade</th>
+                  <th className="text-left p-3 font-semibold text-gray-700">O que está incluso</th>
+                  <th className="text-center p-3 font-semibold text-gray-700 w-24">Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -306,16 +305,15 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
                   return (
                     <tr key={key} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                       <td className="p-3 font-medium text-gray-900">{fp?.name || key}</td>
-                      <td className="p-3 text-gray-500 text-xs">{fp?.description || '-'}</td>
-                      <td className="p-3 text-right font-mono text-gray-700">{getFeaturePrice(key)}</td>
+                      <td className="p-3 text-gray-600 text-sm">{fp?.description || '-'}</td>
                       <td className="p-3 text-center">
                         {isActive ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-bold">
+                          <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">
                             ✓ Incluso
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full text-xs">
-                            Não incluso
+                          <span className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-400 rounded-full text-xs">
+                            —
                           </span>
                         )}
                       </td>
@@ -331,34 +329,19 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
         <div className="mb-6 print-no-break">
           <h2 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
             <span className="w-8 h-8 bg-orange-500 text-white rounded-lg flex items-center justify-center text-sm">2</span>
-            Implementação & Serviços
+            O que está incluso na Implementação
           </h2>
           
-          <div className="border border-gray-200 rounded-lg overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="text-left p-3 font-semibold text-gray-700">Serviço</th>
-                  <th className="text-left p-3 font-semibold text-gray-700">Descrição</th>
-                  <th className="text-right p-3 font-semibold text-gray-700">Investimento</th>
-                </tr>
-              </thead>
-              <tbody>
-                {SERVICES_LIST.filter(s => selectedServices.includes(s.id) && s.costType === 'fixed').map((svc, idx) => (
-                  <tr key={svc.id} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                    <td className="p-3 font-medium text-gray-900">{svc.label}</td>
-                    <td className="p-3 text-gray-500 text-xs">{svc.description}</td>
-                    <td className="p-3 text-right font-mono font-bold text-orange-600">{fmt(svc.cost)}</td>
-                  </tr>
-                ))}
-              </tbody>
-              <tfoot className="bg-orange-50 border-t-2 border-orange-200">
-                <tr>
-                  <td colSpan={2} className="p-3 font-bold text-gray-900">Total Implementação</td>
-                  <td className="p-3 text-right font-mono font-bold text-orange-600 text-lg">{fmt(setupTotal)}</td>
-                </tr>
-              </tfoot>
-            </table>
+          <div className="grid grid-cols-2 gap-3">
+            {SERVICES_LIST.filter(s => selectedServices.includes(s.id) && s.costType === 'fixed').map((svc) => (
+              <div key={svc.id} className="bg-gray-50 p-4 rounded-lg flex items-start gap-3 border border-gray-100">
+                <span className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">✓</span>
+                <div>
+                  <p className="font-semibold text-gray-900 text-sm">{svc.label}</p>
+                  <p className="text-gray-500 text-xs mt-0.5">{svc.description}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
         
@@ -535,6 +518,39 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
               <span className="text-gray-700"><strong>Go-live:</strong> Sistema configurado e equipe treinada em até 7 dias</span>
             </li>
           </ol>
+        </div>
+        
+        {/* CTA - STRIPE CHECKOUT */}
+        <div className="mt-6 bg-gradient-to-r from-green-500 to-emerald-600 p-6 rounded-xl text-center no-print-button print-no-break">
+          <h3 className="text-white text-lg font-bold mb-2">Pronto para começar?</h3>
+          <p className="text-green-100 text-sm mb-4">
+            Clique abaixo para finalizar a contratação de forma segura via Stripe.
+          </p>
+          <button
+            onClick={() => {
+              // Stripe Checkout - Redirect
+              const stripeCheckoutUrl = import.meta.env.VITE_STRIPE_CHECKOUT_URL;
+              if (stripeCheckoutUrl) {
+                // Adiciona parâmetros de valor como query params
+                const params = new URLSearchParams({
+                  client_reference_id: client.companyName || 'cliente',
+                  prefilled_email: client.email || '',
+                });
+                window.open(`${stripeCheckoutUrl}?${params.toString()}`, '_blank');
+              } else {
+                alert('⚠️ Configure VITE_STRIPE_CHECKOUT_URL no arquivo .env.local para habilitar o checkout.\n\nExemplo:\nVITE_STRIPE_CHECKOUT_URL=https://buy.stripe.com/seu_link_aqui');
+              }
+            }}
+            className="inline-flex items-center gap-3 px-8 py-4 bg-white text-green-600 font-bold text-lg rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+          >
+            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.591-7.305z"/>
+            </svg>
+            Contratar Agora - {fmt(setupTotal + monthlyPrice)}
+          </button>
+          <p className="text-green-200 text-[10px] mt-3">
+            Pagamento seguro processado pela Stripe • Parcele em até 12x
+          </p>
         </div>
         
         {/* FOOTER */}
