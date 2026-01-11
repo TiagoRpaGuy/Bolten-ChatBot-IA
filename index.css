@@ -15,7 +15,7 @@
 /* Remove number input arrows */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-input[type="number"] { -moz-appearance: textfield; }
+input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
 
 /* Range slider */
 input[type="range"] { height: 6px; border-radius: 3px; cursor: pointer; }
@@ -68,7 +68,7 @@ input[type="range"] { height: 6px; border-radius: 3px; cursor: pointer; }
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
-    color-adjust: exact !important;
+    forced-color-adjust: none !important;
   }
 
   /* Page setup */
@@ -119,5 +119,102 @@ input[type="range"] { height: 6px; border-radius: 3px; cursor: pointer; }
   * {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ========================================
+   MOBILE RESPONSIVE OVERRIDES
+   ======================================== */
+@media screen and (max-width: 768px) {
+  /* A4 page on mobile - scale down for readability */
+  .a4-page {
+    width: 100% !important;
+    min-height: auto !important;
+    padding: 4mm !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+  
+  /* Header adjustments */
+  .a4-page h1 {
+    font-size: 1.5rem !important;
+  }
+  
+  .a4-page h2 {
+    font-size: 1rem !important;
+  }
+  
+  /* Grid adjustments for mobile */
+  .a4-page .grid-cols-2,
+  .a4-page .grid-cols-3,
+  .a4-page .grid-cols-4 {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+  
+  /* Table responsiveness */
+  .a4-page table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Chart adjustments */
+  .css-bar-chart {
+    height: 80px !important;
+  }
+  
+  .css-bar {
+    max-width: 16px !important;
+  }
+  
+  /* Button adjustments */
+  .a4-page button {
+    width: 100% !important;
+    padding: 1rem !important;
+  }
+  
+  /* Text size adjustments */
+  .a4-page .text-2xl {
+    font-size: 1.25rem !important;
+  }
+  
+  .a4-page .text-xl {
+    font-size: 1rem !important;
+  }
+  
+  .a4-page .text-lg {
+    font-size: 0.9rem !important;
+  }
+}
+
+/* Extra small screens */
+@media screen and (max-width: 480px) {
+  .a4-page {
+    padding: 2mm !important;
+  }
+  
+  /* Stack grid items vertically */
+  .a4-page .grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Smaller text */
+  .a4-page .text-sm {
+    font-size: 0.75rem !important;
+  }
+  
+  .a4-page .text-xs {
+    font-size: 0.65rem !important;
+  }
+}
+
+/* Safe area insets for modern phones with notches */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
   }
 }
