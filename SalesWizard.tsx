@@ -18,7 +18,7 @@ interface StepIndicatorProps {
 }
 
 const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep, isDark }) => (
-  <div className="flex items-center justify-center gap-2 mb-8">
+  <div className="flex items-center justify-center gap-1 mb-8 flex-wrap">
     {WIZARD_STEPS.map((step, i) => {
       const isActive = step.id === currentStep;
       const isCompleted = step.id < currentStep;
@@ -27,7 +27,7 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep, isDark }) =>
         <React.Fragment key={step.id}>
           <div className="flex flex-col items-center">
             <div 
-              className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+              className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
                 isActive 
                   ? 'bg-blue-600 text-white ring-4 ring-blue-100' 
                   : isCompleted 
@@ -38,19 +38,19 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep, isDark }) =>
               }`}
             >
               {isCompleted ? (
-                <span className="material-symbols-outlined text-lg">check</span>
+                <span className="material-symbols-outlined text-base">check</span>
               ) : (
-                <span className="material-symbols-outlined text-lg">{step.icon}</span>
+                <span className="material-symbols-outlined text-base">{step.icon}</span>
               )}
             </div>
-            <span className={`text-[10px] mt-1 font-medium ${
+            <span className={`text-[9px] mt-1 font-medium text-center max-w-[60px] ${
               isActive ? 'text-blue-600' : isDark ? 'text-slate-500' : 'text-gray-500'
             }`}>
               {step.title}
             </span>
           </div>
           {i < WIZARD_STEPS.length - 1 && (
-            <div className={`w-8 h-0.5 ${isCompleted ? 'bg-green-500' : isDark ? 'bg-slate-700' : 'bg-gray-200'}`} />
+            <div className={`w-4 h-0.5 ${isCompleted ? 'bg-green-500' : isDark ? 'bg-slate-700' : 'bg-gray-200'}`} />
           )}
         </React.Fragment>
       );
@@ -79,6 +79,35 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, hint, children, i
       </p>
     )}
     {children}
+  </div>
+);
+
+// ========================================
+// CURRENCY INPUT
+// ========================================
+interface CurrencyInputProps {
+  value: number;
+  onChange: (v: number) => void;
+  isDark: boolean;
+  placeholder?: string;
+  label?: string;
+}
+
+const CurrencyInput: React.FC<CurrencyInputProps> = ({ value, onChange, isDark, placeholder, label }) => (
+  <div className="relative">
+    {label && <label className={`text-xs font-medium mb-1 block ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>{label}</label>}
+    <div className="flex items-center">
+      <span className={`px-3 py-3 rounded-l-xl text-sm font-bold ${isDark ? 'bg-slate-700 text-slate-400' : 'bg-gray-100 text-gray-500'}`}>R$</span>
+      <input
+        type="number"
+        value={value}
+        onChange={e => onChange(+e.target.value || 0)}
+        placeholder={placeholder}
+        className={`flex-1 py-3 px-4 rounded-r-xl text-lg font-bold ${
+          isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300 text-gray-900'
+        } border focus:ring-2 focus:ring-blue-500 outline-none`}
+      />
+    </div>
   </div>
 );
 
@@ -196,14 +225,14 @@ const CheckboxOption: React.FC<CheckboxOptionProps> = ({
 // STEP COMPONENTS
 // ========================================
 
-// Step 1: Dimensionamento
-interface Step1Props {
+interface StepProps {
   answers: WizardAnswers;
   setAnswers: React.Dispatch<React.SetStateAction<WizardAnswers>>;
   isDark: boolean;
 }
 
-const Step1Dimensionamento: React.FC<Step1Props> = ({ answers, setAnswers, isDark }) => {
+// Step 1: Dimensionamento
+const Step1Dimensionamento: React.FC<StepProps> = ({ answers, setAnswers, isDark }) => {
   const q = WIZARD_QUESTIONS.step1;
   
   return (
@@ -239,7 +268,7 @@ const Step1Dimensionamento: React.FC<Step1Props> = ({ answers, setAnswers, isDar
         </div>
         
         {/* Quick select */}
-        <div className="flex gap-2 mt-4">
+        <div className="flex gap-2 mt-4 flex-wrap">
           {[1, 2, 5, 10, 20, 50].map(n => (
             <button
               key={n}
@@ -291,9 +320,126 @@ const Step1Dimensionamento: React.FC<Step1Props> = ({ answers, setAnswers, isDar
   );
 };
 
-// Step 2: Escopo Técnico
-const Step2EscopoTecnico: React.FC<Step1Props> = ({ answers, setAnswers, isDark }) => {
+// Step 2: Discovery Financeiro (ROI) - NOVA!
+const Step2DiscoveryFinanceiro: React.FC<StepProps> = ({ answers, setAnswers, isDark }) => {
   const q = WIZARD_QUESTIONS.step2;
+  
+  return (
+    <>
+      {/* Ticket Médio */}
+      <QuestionCard question={q.ticketMedio.question} hint={q.ticketMedio.hint} isDark={isDark}>
+        <CurrencyInput
+          value={answers.ticketMedio}
+          onChange={v => setAnswers(a => ({ ...a, ticketMedio: v }))}
+          isDark={isDark}
+          placeholder="2000"
+        />
+        <div className="flex gap-2 mt-4 flex-wrap">
+          {[500, 1000, 2000, 5000, 10000, 20000].map(n => (
+            <button
+              key={n}
+              onClick={() => setAnswers(a => ({ ...a, ticketMedio: n }))}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium ${
+                answers.ticketMedio === n 
+                  ? 'bg-blue-600 text-white' 
+                  : isDark 
+                    ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' 
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {fmt(n)}
+            </button>
+          ))}
+        </div>
+      </QuestionCard>
+      
+      {/* Leads por mês */}
+      <QuestionCard question={q.leadsPerMonth.question} hint={q.leadsPerMonth.hint} isDark={isDark}>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setAnswers(a => ({ ...a, leadsPerMonth: Math.max(1, a.leadsPerMonth - 10) }))}
+            className={`w-12 h-12 rounded-xl text-xl font-bold ${isDark ? 'bg-slate-700 text-white hover:bg-slate-600' : 'bg-gray-200 hover:bg-gray-300'}`}
+          >
+            −
+          </button>
+          <input
+            type="number"
+            min={1}
+            value={answers.leadsPerMonth}
+            onChange={e => setAnswers(a => ({ ...a, leadsPerMonth: Math.max(1, +e.target.value || 1) }))}
+            className={`w-28 text-center text-3xl font-bold py-3 rounded-xl border ${
+              isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
+            }`}
+          />
+          <button
+            onClick={() => setAnswers(a => ({ ...a, leadsPerMonth: a.leadsPerMonth + 10 }))}
+            className={`w-12 h-12 rounded-xl text-xl font-bold ${isDark ? 'bg-slate-700 text-white hover:bg-slate-600' : 'bg-gray-200 hover:bg-gray-300'}`}
+          >
+            +
+          </button>
+          <span className={`text-lg ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+            leads/mês
+          </span>
+        </div>
+        <div className="flex gap-2 mt-4 flex-wrap">
+          {[20, 50, 100, 200, 500, 1000].map(n => (
+            <button
+              key={n}
+              onClick={() => setAnswers(a => ({ ...a, leadsPerMonth: n }))}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium ${
+                answers.leadsPerMonth === n 
+                  ? 'bg-blue-600 text-white' 
+                  : isDark 
+                    ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' 
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {n}
+            </button>
+          ))}
+        </div>
+      </QuestionCard>
+      
+      {/* Taxa de Conversão */}
+      <QuestionCard question={q.conversionRate.question} hint={q.conversionRate.hint} isDark={isDark}>
+        <div className="flex items-center gap-4">
+          <input
+            type="range"
+            min={1}
+            max={30}
+            value={answers.conversionRate}
+            onChange={e => setAnswers(a => ({ ...a, conversionRate: +e.target.value }))}
+            className="flex-1 accent-blue-600"
+          />
+          <span className={`text-3xl font-bold min-w-[60px] text-right ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            {answers.conversionRate}%
+          </span>
+        </div>
+        <div className="flex gap-2 mt-4 flex-wrap">
+          {[2, 5, 10, 15, 20, 25].map(n => (
+            <button
+              key={n}
+              onClick={() => setAnswers(a => ({ ...a, conversionRate: n }))}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium ${
+                answers.conversionRate === n 
+                  ? 'bg-blue-600 text-white' 
+                  : isDark 
+                    ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' 
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {n}%
+            </button>
+          ))}
+        </div>
+      </QuestionCard>
+    </>
+  );
+};
+
+// Step 3: Escopo Técnico
+const Step3EscopoTecnico: React.FC<StepProps> = ({ answers, setAnswers, isDark }) => {
+  const q = WIZARD_QUESTIONS.step3;
   
   return (
     <>
@@ -337,9 +483,9 @@ const Step2EscopoTecnico: React.FC<Step1Props> = ({ answers, setAnswers, isDark 
   );
 };
 
-// Step 3: Serviços
-const Step3Servicos: React.FC<Step1Props> = ({ answers, setAnswers, isDark }) => {
-  const q = WIZARD_QUESTIONS.step3;
+// Step 4: Serviços
+const Step4Servicos: React.FC<StepProps> = ({ answers, setAnswers, isDark }) => {
+  const q = WIZARD_QUESTIONS.step4;
   
   return (
     <QuestionCard question={q.services.question} hint={q.services.hint} isDark={isDark}>
@@ -362,7 +508,7 @@ const Step3Servicos: React.FC<Step1Props> = ({ answers, setAnswers, isDark }) =>
         />
         <CheckboxOption
           label="Onboarding Assistido"
-          description="Setup técnico acompanhado (obrigatório)"
+          description="Setup técnico acompanhado"
           icon="support_agent"
           isSelected={answers.servicesOnboarding}
           onToggle={() => setAnswers(a => ({ ...a, servicesOnboarding: !a.servicesOnboarding }))}
@@ -373,9 +519,9 @@ const Step3Servicos: React.FC<Step1Props> = ({ answers, setAnswers, isDark }) =>
   );
 };
 
-// Step 4: Fatores de Risco
-const Step4Contrato: React.FC<Step1Props> = ({ answers, setAnswers, isDark }) => {
-  const q = WIZARD_QUESTIONS.step4;
+// Step 5: Fatores de Risco
+const Step5Contrato: React.FC<StepProps> = ({ answers, setAnswers, isDark }) => {
+  const q = WIZARD_QUESTIONS.step5;
   
   return (
     <QuestionCard question={q.riskFactors.question} hint={q.riskFactors.hint} isDark={isDark}>
@@ -386,7 +532,7 @@ const Step4Contrato: React.FC<Step1Props> = ({ answers, setAnswers, isDark }) =>
             label={opt.label}
             description={opt.description}
             icon={opt.icon}
-            badge={`+${opt.percent}%`}
+            badge={`+${fmt(opt.suggestedValue)}`}
             isSelected={
               opt.id === 'urgency' ? answers.hasUrgency :
               opt.id === 'meetings' ? answers.hasMeetings :
@@ -430,6 +576,20 @@ const SummaryPanel: React.FC<SummaryPanelProps> = ({ answers, isDark }) => {
           </p>
         ))}
       </div>
+      
+      {/* ROI Preview */}
+      <div className={`mt-3 pt-3 border-t ${isDark ? 'border-slate-700' : 'border-gray-200'}`}>
+        <p className={`text-[10px] uppercase font-bold mb-1 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+          Preview ROI
+        </p>
+        <p className={`text-xs ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+          💰 Ticket: {fmt(answers.ticketMedio)}
+        </p>
+        <p className={`text-xs ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+          📊 {answers.leadsPerMonth} leads × {answers.conversionRate}%
+        </p>
+      </div>
+      
       <div className={`mt-3 pt-3 border-t ${isDark ? 'border-slate-700' : 'border-gray-200'}`}>
         <p className={`text-xs font-bold ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
           Plano: <span className="text-blue-500 uppercase">{preset.plan}</span>
@@ -523,13 +683,16 @@ const SalesWizard: React.FC<SalesWizardProps> = ({ onComplete, onCancel, isDark 
               <Step1Dimensionamento answers={answers} setAnswers={setAnswers} isDark={isDark} />
             )}
             {currentStep === 2 && (
-              <Step2EscopoTecnico answers={answers} setAnswers={setAnswers} isDark={isDark} />
+              <Step2DiscoveryFinanceiro answers={answers} setAnswers={setAnswers} isDark={isDark} />
             )}
             {currentStep === 3 && (
-              <Step3Servicos answers={answers} setAnswers={setAnswers} isDark={isDark} />
+              <Step3EscopoTecnico answers={answers} setAnswers={setAnswers} isDark={isDark} />
             )}
             {currentStep === 4 && (
-              <Step4Contrato answers={answers} setAnswers={setAnswers} isDark={isDark} />
+              <Step4Servicos answers={answers} setAnswers={setAnswers} isDark={isDark} />
+            )}
+            {currentStep === 5 && (
+              <Step5Contrato answers={answers} setAnswers={setAnswers} isDark={isDark} />
             )}
           </div>
           

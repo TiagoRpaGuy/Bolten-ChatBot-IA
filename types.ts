@@ -703,16 +703,21 @@ export interface WizardAnswers {
   teamSize: number;
   wantsAI: boolean;
   
-  // Etapa 2: Escopo Técnico
+  // Etapa 2: Discovery Financeiro (ROI) - NOVA!
+  ticketMedio: number;
+  leadsPerMonth: number;
+  conversionRate: number;
+  
+  // Etapa 3: Escopo Técnico
   integrationLevel: IntegrationLevel;
   wantsConversions: boolean;
   
-  // Etapa 3: Serviços
+  // Etapa 4: Serviços
   servicesMigration: boolean;
   servicesTraining: boolean;
   servicesOnboarding: boolean;
   
-  // Etapa 4: Fatores de Risco
+  // Etapa 5: Fatores de Risco
   hasUrgency: boolean;
   hasMeetings: boolean;
   hasPremiumSupport: boolean;
@@ -721,6 +726,9 @@ export interface WizardAnswers {
 export const WIZARD_INITIAL_STATE: WizardAnswers = {
   teamSize: 1,
   wantsAI: true,
+  ticketMedio: 2000,
+  leadsPerMonth: 100,
+  conversionRate: 5,
   integrationLevel: 'basic',
   wantsConversions: false,
   servicesMigration: false,
@@ -740,9 +748,10 @@ export interface WizardStep {
 
 export const WIZARD_STEPS: WizardStep[] = [
   { id: 1, title: 'Dimensionamento', subtitle: 'Tamanho da equipe e recursos', icon: 'groups' },
-  { id: 2, title: 'Escopo Técnico', subtitle: 'Integrações e conversões', icon: 'integration_instructions' },
-  { id: 3, title: 'Serviços', subtitle: 'Setup e implementação', icon: 'home_repair_service' },
-  { id: 4, title: 'Contrato', subtitle: 'Fatores de risco', icon: 'description' },
+  { id: 2, title: 'Discovery Financeiro', subtitle: 'Potencial do cliente (ROI)', icon: 'trending_up' },
+  { id: 3, title: 'Escopo Técnico', subtitle: 'Integrações e conversões', icon: 'integration_instructions' },
+  { id: 4, title: 'Serviços', subtitle: 'Setup e implementação', icon: 'home_repair_service' },
+  { id: 5, title: 'Contrato', subtitle: 'Fatores de risco', icon: 'description' },
 ];
 
 export const WIZARD_QUESTIONS = {
@@ -759,6 +768,24 @@ export const WIZARD_QUESTIONS = {
     },
   },
   step2: {
+    title: 'Discovery Financeiro',
+    ticketMedio: {
+      question: 'Qual o Ticket Médio de Venda do cliente?',
+      hint: 'Valor médio de cada venda/contrato fechado.',
+      placeholder: 2000,
+    },
+    leadsPerMonth: {
+      question: 'Volume de Leads/Oportunidades por mês?',
+      hint: 'Quantas oportunidades entram no funil mensalmente.',
+      placeholder: 100,
+    },
+    conversionRate: {
+      question: 'Taxa de Conversão Atual Aproximada (%)?',
+      hint: 'Porcentagem atual de leads que viram clientes.',
+      placeholder: 5,
+    },
+  },
+  step3: {
     integrationLevel: {
       question: 'Nível de Complexidade de Integração:',
       options: [
@@ -772,7 +799,7 @@ export const WIZARD_QUESTIONS = {
       hint: 'Tracking avançado para atribuição de campanhas.',
     },
   },
-  step3: {
+  step4: {
     services: {
       question: 'Quais serviços operacionais serão entregues?',
       hint: 'Selecione todos que se aplicam.',
@@ -783,14 +810,14 @@ export const WIZARD_QUESTIONS = {
       ],
     },
   },
-  step4: {
+  step5: {
     riskFactors: {
       question: 'Fatores de Risco ou Exigências:',
       hint: 'Estes fatores impactam o preço final.',
       options: [
-        { id: 'urgency', label: 'Urgência na Entrega', description: 'Entrega em até 48h (+15%)', icon: 'bolt', percent: 15 },
-        { id: 'meetings', label: 'Reuniões Presenciais', description: 'Atendimento in-loco (+10%)', icon: 'handshake', percent: 10 },
-        { id: 'support', label: 'Suporte Premium/VIP', description: 'SLA de 2h (+20%)', icon: 'verified_user', percent: 20 },
+        { id: 'urgency', label: 'Urgência na Entrega', description: 'Entrega em até 48h', icon: 'bolt', suggestedValue: 500 },
+        { id: 'meetings', label: 'Reuniões Presenciais', description: 'Atendimento in-loco', icon: 'handshake', suggestedValue: 300 },
+        { id: 'support', label: 'Suporte Premium/VIP', description: 'SLA de 2h', icon: 'verified_user', suggestedValue: 800 },
       ],
     },
   },
@@ -807,6 +834,13 @@ export interface CalculatorPreset {
   features: FeatureState;
   services: string[];
   markup: number;
+  // ROI Data - NOVO!
+  roiInputs: {
+    ticketMedio: number;
+    leadsPerMonth: number;
+    conversionRate: number;
+    improvementPercent: number;
+  };
 }
 
 /**
@@ -861,6 +895,12 @@ export function mapWizardToCalculator(answers: WizardAnswers): CalculatorPreset 
     features,
     services,
     markup,
+    roiInputs: {
+      ticketMedio: answers.ticketMedio,
+      leadsPerMonth: answers.leadsPerMonth,
+      conversionRate: answers.conversionRate,
+      improvementPercent: 20, // Valor padrão
+    },
   };
 }
 

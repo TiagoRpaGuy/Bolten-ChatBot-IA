@@ -784,10 +784,39 @@ export default function App() {
   const [manualSetup, setManualSetup] = useState<number | null>(null);
   const [manualMonthly, setManualMonthly] = useState<number | null>(null);
   
+  // PREÇOS EDITÁVEIS DE SERVIÇOS (valores iniciais sugeridos)
+  const [servicePrices, setServicePrices] = useState<Record<string, number>>({
+    onboarding: 500,
+    training: 1500,
+    migration: 1000,
+  });
+  
+  // PREÇOS EDITÁVEIS DE FATORES DE COMPLEXIDADE (agora em R$, não %)
+  const [complexityPrices, setComplexityPrices] = useState<Record<string, number>>({
+    urgencia: 500,
+    presencial: 300,
+    suporte: 800,
+  });
+  
   const [roi, setRoi] = useState<ROIInputs>({ ticketMedio: 2000, leadsPerMonth: 100, conversionRate: 5, improvementPercent: 20 });
   
   // CALCULATIONS (Sistema Legado - mantido para retrocompatibilidade)
   const dynamicSetup = useMemo(() => calculateDynamicSetup(features), [features]);
+  
+  // NOVO: Soma de serviços usando preços editáveis
+  const editableServicesTotal = useMemo(() => {
+    return services
+      .filter(id => ['onboarding', 'training', 'migration'].includes(id))
+      .reduce((sum, id) => sum + (servicePrices[id] || 0), 0);
+  }, [services, servicePrices]);
+  
+  // NOVO: Soma de fatores de complexidade usando valores em R$ (não mais %)
+  const editableComplexityTotal = useMemo(() => {
+    return services
+      .filter(id => ['urgencia', 'presencial', 'suporte'].includes(id))
+      .reduce((sum, id) => sum + (complexityPrices[id] || 0), 0);
+  }, [services, complexityPrices]);
+  
   const servicesTotal = useMemo(() => calculateServicesTotal(services), [services]);
   const complexityPct = useMemo(() => calculateComplexityPercent(services), [services]);
   const baseCost = useMemo(() => calculateInternalCost(features, tier.maxUsers), [features, tier.maxUsers]);
@@ -834,7 +863,8 @@ export default function App() {
   );
   
   // VALORES FINAIS (calculado ou manual)
-  const calcSetup = dynamicSetup + servicesTotal;
+  // Setup agora usa preços editáveis de serviços + fatores de complexidade
+  const calcSetup = dynamicSetup + editableServicesTotal + editableComplexityTotal;
   const finalSetup = manualSetup ?? calcSetup;
   // Usar preço flexível se modelo não for fixed_tier (legado)
   const finalMonthly = manualMonthly ?? (pricingModel === 'fixed_tier' ? calcMonthly : flexibleMonthlyPrice);
@@ -893,6 +923,9 @@ export default function App() {
     setFeatures(preset.features);
     setServices(preset.services);
     setMarkup(preset.markup);
+    
+    // Aplicar dados de ROI coletados no wizard
+    setRoi(preset.roiInputs);
     
     // Atualizar tier baseado no plano
     const tierForPlan = USER_TIERS.find(t => t.linkedPlan === preset.plan);
@@ -1405,41 +1438,133 @@ export default function App() {
             </div>
           </div>
           
-          {/* RICH SERVICE LIST */}
+          {/* RICH SERVICE LIST - COM PREÇOS EDITÁVEIS */}
           <div className={`${card} border rounded-xl p-3`}>
             <div className="flex justify-between items-center mb-3">
               <h2 className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>Menu de Serviços</h2>
               <span className="text-[8px] bg-orange-500/20 text-orange-500 px-2 py-1 rounded-full font-bold">TAXA ÚNICA</span>
             </div>
             <div className="space-y-2">
-              {fixedServices.map(svc => (
-                <ServiceListItem
-                  key={svc.id}
-                  item={svc}
-                  isSelected={services.includes(svc.id)}
-                  onToggle={() => toggleService(svc.id)}
-                  isDark={isDark}
-                />
-              ))}
+              {fixedServices.map(svc => {
+                const isSelected = services.includes(svc.id);
+                const price = servicePrices[svc.id] ?? svc.cost;
+                return (
+                  <div 
+                    key={svc.id}
+                    className={`p-3 rounded-lg border transition-all ${
+                      isSelected 
+                        ? 'border-blue-500 bg-blue-500/10' 
+                        : isDark 
+                          ? 'border-slate-600 hover:border-slate-500' 
+                          : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => toggleService(svc.id)}
+                        className="w-4 h-4 mt-0.5 accent-blue-600"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className={`text-sm font-medium ${isSelected ? 'text-blue-600' : isDark ? 'text-slate-200' : 'text-gray-800'}`}>
+                          {svc.label}
+                        </p>
+                        <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
+                          {svc.description}
+                        </p>
+                      </div>
+                      {isSelected && (
+                        <div className="flex items-center gap-1.5">
+                          <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>R$</span>
+                          <input
+                            type="number"
+                            value={price}
+                            onChange={e => setServicePrices(p => ({ ...p, [svc.id]: +e.target.value }))}
+                            className={`w-20 text-sm font-bold text-right py-1 px-2 rounded ${
+                              isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
+                            } border`}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
             
-            {/* Complexity Factors */}
+            {/* Complexity Factors - COM VALORES EM R$ */}
             <div className={`mt-4 pt-3 border-t ${isDark ? 'border-slate-600' : 'border-gray-200'}`}>
               <div className="flex justify-between items-center mb-3">
                 <h3 className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>Fatores de Complexidade</h3>
-                <span className="text-[8px] bg-green-500/20 text-green-500 px-2 py-1 rounded-full font-bold">% SOBRE MENSAL</span>
+                <span className="text-[8px] bg-green-500/20 text-green-500 px-2 py-1 rounded-full font-bold">+ R$ NO SETUP</span>
               </div>
               <div className="space-y-2">
-                {complexityFactors.map(svc => (
-                  <ServiceListItem
-                    key={svc.id}
-                    item={svc}
-                    isSelected={services.includes(svc.id)}
-                    onToggle={() => toggleService(svc.id)}
-                    isDark={isDark}
-                  />
-                ))}
+                {complexityFactors.map(svc => {
+                  const isSelected = services.includes(svc.id);
+                  const price = complexityPrices[svc.id] ?? 0;
+                  return (
+                    <div 
+                      key={svc.id}
+                      className={`p-3 rounded-lg border transition-all ${
+                        isSelected 
+                          ? 'border-green-500 bg-green-500/10' 
+                          : isDark 
+                            ? 'border-slate-600 hover:border-slate-500' 
+                            : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleService(svc.id)}
+                          className="w-4 h-4 mt-0.5 accent-green-600"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className={`text-sm font-medium ${isSelected ? 'text-green-600' : isDark ? 'text-slate-200' : 'text-gray-800'}`}>
+                            {svc.label}
+                          </p>
+                          <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
+                            {svc.description}
+                          </p>
+                        </div>
+                        {isSelected && (
+                          <div className="flex items-center gap-1.5">
+                            <span className={`text-xs ${isDark ? 'text-green-400' : 'text-green-600'}`}>+R$</span>
+                            <input
+                              type="number"
+                              value={price}
+                              onChange={e => setComplexityPrices(p => ({ ...p, [svc.id]: +e.target.value }))}
+                              className={`w-20 text-sm font-bold text-right py-1 px-2 rounded ${
+                                isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
+                              } border`}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
+              
+              {/* Total de Serviços + Complexidade */}
+              {(editableServicesTotal > 0 || editableComplexityTotal > 0) && (
+                <div className={`mt-3 p-2 rounded-lg ${isDark ? 'bg-slate-700/50' : 'bg-gray-50'}`}>
+                  <div className="flex justify-between text-xs">
+                    <span className={isDark ? 'text-slate-400' : 'text-gray-500'}>Serviços:</span>
+                    <span className={`font-mono ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>{fmt(editableServicesTotal)}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className={isDark ? 'text-slate-400' : 'text-gray-500'}>Complexidade:</span>
+                    <span className={`font-mono ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>{fmt(editableComplexityTotal)}</span>
+                  </div>
+                  <div className={`flex justify-between text-sm font-bold mt-1 pt-1 border-t ${isDark ? 'border-slate-600' : 'border-gray-200'}`}>
+                    <span className={isDark ? 'text-slate-300' : 'text-gray-700'}>Total Serviços:</span>
+                    <span className="text-orange-500">{fmt(editableServicesTotal + editableComplexityTotal)}</span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           
