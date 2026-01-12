@@ -1,15 +1,15 @@
-import React, { useState, useMemo, useCallback } from 'react';
+﻿import React, { useState, useMemo, useCallback } from 'react';
 import {
   PlanLevel, ClientData, FeatureState, ThemeMode, PartnershipModel, ROIInputs, PaybackPoint,
   USER_TIERS, UserTier, SERVICES_LIST, ServiceItem, INTERNAL_PRICING, PLAN_PRESETS, SYSTEM_CONFIG,
   PARTNERSHIP_MODELS, FEATURE_TOOLTIPS, ROI_TOOLTIPS, PRICE_TOOLTIPS,
   calculateDynamicSetup, calculateInternalCost, calculateServicesTotal, calculateComplexityPercent,
   calculateFinalPrice, calculateROI, calculateProfit, calculateCumulativeProfit, findPaybackMonth, calculateYearlyProfit,
-  // Sistema flexível
+  // Sistema flexÃ­vel
   PricingModel, PRICING_MODELS, USER_PRICE_RANGES, FIXED_TIERS, HYBRID_PRICING, FINANCIAL_RULES,
   getUserPriceRange, calculateFlexibleMonthlyPrice, calculateInternalCostFlexible, 
   calculateProfitFlexible, validateMinimumPrice, getSuggestedPrice, PRICING_MODEL_TOOLTIPS,
-  // Onboarding e Explicações
+  // Onboarding e ExplicaÃ§Ãµes
   ONBOARDING_TIPS, generateROIExplanation, generateCostBreakdown,
   // Sales Wizard
   CalculatorPreset,
@@ -75,7 +75,7 @@ const OnboardingTip: React.FC<OnboardingTipProps> = ({ tipKey, isVisible, onTogg
           <ul className="space-y-1">
             {tip.tips.map((t, i) => (
               <li key={i} className={`text-[10px] flex items-start gap-1.5 ${isDark ? 'text-slate-500' : 'text-blue-500'}`}>
-                <span className="text-blue-400">•</span>
+                <span className="text-blue-400">â€¢</span>
                 {t}
               </li>
             ))}
@@ -99,10 +99,10 @@ const PriceModeToggle: React.FC<PriceModeToggleProps> = ({ isAuto, onToggle, isD
   <div className={`flex items-center justify-between p-3 rounded-lg ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}>
     <div>
       <p className={`text-xs font-bold ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
-        Modo de Precificação
+        Modo de PrecificaÃ§Ã£o
       </p>
       <p className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
-        {isAuto ? 'Preços calculados automaticamente' : 'Você define os valores manualmente'}
+        {isAuto ? 'PreÃ§os calculados automaticamente' : 'VocÃª define os valores manualmente'}
       </p>
     </div>
     <button
@@ -165,7 +165,7 @@ const ServiceListItem: React.FC<ServiceListItemProps> = ({ item, isSelected, onT
             </span>
             {item.required && (
               <span className="text-[8px] bg-orange-500 text-white px-1.5 py-0.5 rounded font-bold">
-                OBRIGATÓRIO
+                OBRIGATÃ“RIO
               </span>
             )}
           </div>
@@ -200,7 +200,7 @@ const CumulativeProfitChart: React.FC<CumulativeProfitChartProps> = ({ data, pay
     return (
       <div className={`p-4 rounded-xl h-48 flex items-center justify-center ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}>
         <p className={`text-sm text-center ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-          Preencha os dados de ROI<br/>para visualizar o gráfico
+          Preencha os dados de ROI<br/>para visualizar o grÃ¡fico
         </p>
       </div>
     );
@@ -213,20 +213,20 @@ const CumulativeProfitChart: React.FC<CumulativeProfitChartProps> = ({ data, pay
       {/* LEGENDA GRANDE */}
       <div className={`text-center p-3 mb-3 rounded-lg ${isDark ? 'bg-slate-600' : 'bg-white border border-gray-200'}`}>
         <p className={`text-[11px] uppercase font-bold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-          Acumulação de Lucro (12 meses)
+          AcumulaÃ§Ã£o de Lucro (12 meses)
         </p>
         <p className={`text-sm mt-1 ${isDark ? 'text-white' : 'text-gray-800'}`}>
           {paybackMonth !== null ? (
             <>
-              Seu projeto <strong className="text-green-500">se paga no Mês {paybackMonth}</strong> e gera{' '}
+              Seu projeto <strong className="text-green-500">se paga no MÃªs {paybackMonth}</strong> e gera{' '}
               <strong className={yearlyProfit >= 0 ? 'text-green-500' : 'text-red-500'}>
                 {fmt(yearlyProfit)}
               </strong>{' '}
-              de {yearlyProfit >= 0 ? 'lucro' : 'prejuízo'} no primeiro ano.
+              de {yearlyProfit >= 0 ? 'lucro' : 'prejuÃ­zo'} no primeiro ano.
             </>
           ) : (
             <>
-              Com os valores atuais, o <strong className="text-red-500">projeto não se paga</strong> nos primeiros 12 meses.
+              Com os valores atuais, o <strong className="text-red-500">projeto nÃ£o se paga</strong> nos primeiros 12 meses.
             </>
           )}
         </p>
@@ -263,7 +263,7 @@ const CumulativeProfitChart: React.FC<CumulativeProfitChartProps> = ({ data, pay
                       position: 'absolute',
                       [point.isPositive ? 'bottom' : 'top']: '50%',
                     }}
-                    title={`Mês ${point.month}: ${fmt(point.balance)}`}
+                    title={`MÃªs ${point.month}: ${fmt(point.balance)}`}
                   />
                 </div>
                 <span className={`text-[8px] ${isPayback ? 'font-bold text-yellow-500' : isDark ? 'text-slate-500' : 'text-gray-400'}`}>
@@ -276,15 +276,15 @@ const CumulativeProfitChart: React.FC<CumulativeProfitChartProps> = ({ data, pay
       </div>
       
       <div className="flex justify-between mt-2 text-[9px]">
-        <span className="text-red-500">← Investimento</span>
-        <span className="text-green-500">Lucro →</span>
+        <span className="text-red-500">â† Investimento</span>
+        <span className="text-green-500">Lucro â†’</span>
       </div>
     </div>
   );
 };
 
 // ========================================
-// A4 PROPOSAL PAGE (VERSÃO RICA)
+// A4 PROPOSAL PAGE (VERSÃƒO RICA)
 // ========================================
 interface A4ProposalProps {
   client: ClientData;
@@ -302,17 +302,17 @@ interface A4ProposalProps {
   onClose: () => void;
 }
 
-// Preços unitários das funcionalidades para exibição
+// PreÃ§os unitÃ¡rios das funcionalidades para exibiÃ§Ã£o
 const FEATURE_PRICES = {
-  crm: { name: 'CRM & Pipeline de Vendas', description: 'Gestão completa de leads, funil e acompanhamento', monthly: null, perUser: 20 },
-  whatsapp: { name: 'WhatsApp Business API', description: 'Mensagens automáticas e atendimento integrado', monthly: 0, perUser: null },
-  ai: { name: 'Agente de IA 24/7', description: 'Qualificação automática e respostas inteligentes', monthly: 60, perUser: null },
-  conversions: { name: 'Gestão de Conversões', description: 'Tracking avançado e attribution de vendas', monthly: 20, perUser: null },
+  crm: { name: 'CRM & Pipeline de Vendas', description: 'GestÃ£o completa de leads, funil e acompanhamento', monthly: null, perUser: 20 },
+  whatsapp: { name: 'WhatsApp Business API', description: 'Mensagens automÃ¡ticas e atendimento integrado', monthly: 0, perUser: null },
+  ai: { name: 'Agente de IA 24/7', description: 'QualificaÃ§Ã£o automÃ¡tica e respostas inteligentes', monthly: 60, perUser: null },
+  conversions: { name: 'GestÃ£o de ConversÃµes', description: 'Tracking avanÃ§ado e attribution de vendas', monthly: 20, perUser: null },
 };
 
 // Chave PIX configurada
 const PIX_KEY = '45358113000100';
-const PIX_KEY_FORMATTED = '45.358.113/0001-00'; // CNPJ formatado para exibição
+const PIX_KEY_FORMATTED = '45.358.113/0001-00'; // CNPJ formatado para exibiÃ§Ã£o
 
 const A4Proposal: React.FC<A4ProposalProps> = ({
   client, plan, tier, features, selectedServices, setupTotal, monthlyPrice, 
@@ -345,18 +345,18 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
   const yearlyROI = roiRecovered * 12;
   const roiPercentage = yearlyInvestment > 0 ? Math.round((yearlyROI / yearlyInvestment) * 100) : 0;
   
-  // Calcular preço de cada feature para exibição
+  // Calcular preÃ§o de cada feature para exibiÃ§Ã£o
   const getFeaturePrice = (key: string): string => {
     const fp = FEATURE_PRICES[key as keyof typeof FEATURE_PRICES];
     if (!fp) return '-';
-    if (fp.perUser) return `R$ ${fp.perUser}/usuário`;
+    if (fp.perUser) return `R$ ${fp.perUser}/usuÃ¡rio`;
     if (fp.monthly) return fmt(fp.monthly);
     return 'Incluso';
   };
   
   return (
     <div className="fixed inset-0 z-50 bg-gray-300 overflow-auto p-4">
-      {/* Controls - Fora da área de impressão */}
+      {/* Controls - Fora da Ã¡rea de impressÃ£o */}
       <div className="max-w-[210mm] mx-auto mb-4 flex justify-end gap-2 no-print-button">
         <button onClick={handlePrint} className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold flex items-center gap-2 shadow-lg">
           <span className="material-symbols-outlined">print</span> Imprimir / Salvar PDF
@@ -366,7 +366,7 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
         </button>
       </div>
       
-      {/* PÁGINA 1 - A4 */}
+      {/* PÃGINA 1 - A4 */}
       <div className="a4-page shadow-2xl mb-8">
         {/* HEADER */}
         <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 text-white p-8 -m-[15mm] mb-8 print-no-break">
@@ -377,7 +377,7 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
               <p className="text-sm mt-2 opacity-90">Preparado para: {client.contactName || 'Cliente'}</p>
             </div>
             <div className="text-right">
-              <p className="text-[10px] opacity-75">Data de emissão</p>
+              <p className="text-[10px] opacity-75">Data de emissÃ£o</p>
               <p className="font-bold">{new Date().toLocaleDateString('pt-BR')}</p>
               <p className="text-[10px] mt-2 opacity-75">Validade</p>
               <p className="font-medium">15 dias</p>
@@ -385,24 +385,24 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
           </div>
         </div>
         
-        {/* SEÇÃO: SOLUÇÃO PROPOSTA */}
+        {/* SEÃ‡ÃƒO: SOLUÃ‡ÃƒO PROPOSTA */}
         <div className="mb-6 print-no-break">
           <h2 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
             <span className="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center text-sm">1</span>
-            Solução Proposta
+            SoluÃ§Ã£o Proposta
           </h2>
           <p className="text-sm text-gray-600 mb-4">
             Plano <strong className="text-blue-600">{plan.charAt(0).toUpperCase() + plan.slice(1)}</strong> com 
             capacidade para <strong>{tier.label}</strong>.
           </p>
           
-          {/* TABELA DE FUNCIONALIDADES (SEM PREÇOS) */}
+          {/* TABELA DE FUNCIONALIDADES (SEM PREÃ‡OS) */}
           <div className="border border-gray-200 rounded-lg overflow-hidden">
             <table className="w-full text-sm">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="text-left p-3 font-semibold text-gray-700 w-1/3">Funcionalidade</th>
-                  <th className="text-left p-3 font-semibold text-gray-700">O que está incluso</th>
+                  <th className="text-left p-3 font-semibold text-gray-700">O que estÃ¡ incluso</th>
                   <th className="text-center p-3 font-semibold text-gray-700 w-24">Status</th>
                 </tr>
               </thead>
@@ -416,11 +416,11 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
                       <td className="p-3 text-center">
                         {isActive ? (
                           <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">
-                            ✓ Incluso
+                            âœ“ Incluso
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-400 rounded-full text-xs">
-                            —
+                            â€”
                           </span>
                         )}
                       </td>
@@ -432,17 +432,17 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
           </div>
         </div>
         
-        {/* SEÇÃO: IMPLEMENTAÇÃO E SERVIÇOS */}
+        {/* SEÃ‡ÃƒO: IMPLEMENTAÃ‡ÃƒO E SERVIÃ‡OS */}
         <div className="mb-6 print-no-break">
           <h2 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
             <span className="w-8 h-8 bg-orange-500 text-white rounded-lg flex items-center justify-center text-sm">2</span>
-            O que está incluso na Implementação
+            O que estÃ¡ incluso na ImplementaÃ§Ã£o
           </h2>
           
           <div className="grid grid-cols-2 gap-3">
             {SERVICES_LIST.filter(s => selectedServices.includes(s.id) && s.costType === 'fixed').map((svc) => (
               <div key={svc.id} className="bg-gray-50 p-4 rounded-lg flex items-start gap-3 border border-gray-100">
-                <span className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">✓</span>
+                <span className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">âœ“</span>
                 <div>
                   <p className="font-semibold text-gray-900 text-sm">{svc.label}</p>
                   <p className="text-gray-500 text-xs mt-0.5">{svc.description}</p>
@@ -452,7 +452,7 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
           </div>
         </div>
         
-        {/* SEÇÃO: INVESTIMENTO */}
+        {/* SEÃ‡ÃƒO: INVESTIMENTO */}
         <div className="bg-gradient-to-r from-slate-800 to-slate-900 text-white p-6 rounded-xl print-no-break">
           <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
             <span className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center text-sm">3</span>
@@ -462,21 +462,21 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
           <div className="grid grid-cols-3 gap-4">
             {/* Setup */}
             <div className="bg-orange-500/20 p-4 rounded-xl text-center">
-              <p className="text-[10px] uppercase tracking-wider text-orange-300 font-bold mb-1">Taxa de Adesão</p>
+              <p className="text-[10px] uppercase tracking-wider text-orange-300 font-bold mb-1">Taxa de AdesÃ£o</p>
               <p className="text-2xl font-bold text-orange-400">{fmt(setupTotal)}</p>
-              <p className="text-[9px] text-orange-200 mt-1">pagamento único</p>
+              <p className="text-[9px] text-orange-200 mt-1">pagamento Ãºnico</p>
             </div>
             
             {/* Mensal */}
             <div className="bg-blue-500/20 p-4 rounded-xl text-center">
               <p className="text-[10px] uppercase tracking-wider text-blue-300 font-bold mb-1">Mensalidade</p>
               <p className="text-2xl font-bold text-blue-400">{fmt(monthlyPrice)}</p>
-              <p className="text-[9px] text-blue-200 mt-1">por mês</p>
+              <p className="text-[9px] text-blue-200 mt-1">por mÃªs</p>
             </div>
             
             {/* Total Ano */}
             <div className="bg-green-500/20 p-4 rounded-xl text-center">
-              <p className="text-[10px] uppercase tracking-wider text-green-300 font-bold mb-1">Total 1º Ano</p>
+              <p className="text-[10px] uppercase tracking-wider text-green-300 font-bold mb-1">Total 1Âº Ano</p>
               <p className="text-2xl font-bold text-green-400">{fmt(yearlyInvestment)}</p>
               <p className="text-[9px] text-green-200 mt-1">investimento total</p>
             </div>
@@ -484,18 +484,18 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
         </div>
       </div>
       
-      {/* PÁGINA 2 - ROI E PROJEÇÃO */}
+      {/* PÃGINA 2 - ROI E PROJEÃ‡ÃƒO */}
       <div className="a4-page shadow-2xl">
-        {/* HEADER PÁGINA 2 */}
+        {/* HEADER PÃGINA 2 */}
         <div className="bg-gradient-to-r from-green-600 to-emerald-700 text-white p-6 -m-[15mm] mb-8 print-no-break">
-          <h2 className="text-2xl font-bold">Projeção de Retorno sobre Investimento</h2>
-          <p className="text-sm opacity-90 mt-1">Análise financeira baseada nos dados informados</p>
+          <h2 className="text-2xl font-bold">ProjeÃ§Ã£o de Retorno sobre Investimento</h2>
+          <p className="text-sm opacity-90 mt-1">AnÃ¡lise financeira baseada nos dados informados</p>
         </div>
         
-        {/* MÉTRICAS DE ROI */}
+        {/* MÃ‰TRICAS DE ROI */}
         <div className="grid grid-cols-4 gap-3 mb-6 print-no-break">
           <div className="bg-blue-50 p-4 rounded-xl text-center">
-            <p className="text-[9px] uppercase text-blue-600 font-bold">Investimento 1º Ano</p>
+            <p className="text-[9px] uppercase text-blue-600 font-bold">Investimento 1Âº Ano</p>
             <p className="text-xl font-bold text-blue-700 mt-1">{fmt(yearlyInvestment)}</p>
           </div>
           <div className="bg-green-50 p-4 rounded-xl text-center">
@@ -509,14 +509,14 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
           <div className="bg-orange-50 p-4 rounded-xl text-center">
             <p className="text-[9px] uppercase text-orange-600 font-bold">Payback</p>
             <p className="text-xl font-bold text-orange-700 mt-1">
-              {paybackMonth !== null ? `Mês ${paybackMonth}` : 'N/A'}
+              {paybackMonth !== null ? `MÃªs ${paybackMonth}` : 'N/A'}
             </p>
           </div>
         </div>
         
-        {/* GRÁFICO DE ROI - CSS NATIVO */}
+        {/* GRÃFICO DE ROI - CSS NATIVO */}
         <div className="mb-6 print-no-break">
-          <h3 className="text-base font-bold text-gray-900 mb-3">Evolução do Saldo (12 meses)</h3>
+          <h3 className="text-base font-bold text-gray-900 mb-3">EvoluÃ§Ã£o do Saldo (12 meses)</h3>
           
           {paybackData && paybackData.length > 0 ? (
             <div className="bg-gray-50 p-6 rounded-xl">
@@ -524,14 +524,14 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
               <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4 text-center">
                 {paybackMonth !== null && yearlyProfit > 0 ? (
                   <p className="text-sm text-gray-700">
-                    Seu projeto <strong className="text-green-600">se paga no Mês {paybackMonth}</strong> e gera 
-                    <strong className="text-green-600"> {fmt(yearlyProfit)}</strong> de lucro líquido no primeiro ano.
+                    Seu projeto <strong className="text-green-600">se paga no MÃªs {paybackMonth}</strong> e gera 
+                    <strong className="text-green-600"> {fmt(yearlyProfit)}</strong> de lucro lÃ­quido no primeiro ano.
                   </p>
                 ) : (
                   <p className="text-sm text-gray-700">
                     {roiRecovered > monthlyPrice 
                       ? 'O retorno mensal supera a mensalidade, gerando lucro progressivo.'
-                      : 'Ajuste os valores de ROI para visualizar a projeção de payback.'}
+                      : 'Ajuste os valores de ROI para visualizar a projeÃ§Ã£o de payback.'}
                   </p>
                 )}
               </div>
@@ -576,26 +576,26 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
               </div>
               
               <div className="flex justify-between text-[9px] mt-2 text-gray-500">
-                <span className="text-red-500">← Investimento</span>
-                <span className="text-green-500">Lucro →</span>
+                <span className="text-red-500">â† Investimento</span>
+                <span className="text-green-500">Lucro â†’</span>
               </div>
             </div>
           ) : (
             <div className="bg-gray-100 p-8 rounded-xl text-center text-gray-500">
-              Configure os dados de ROI para visualizar o gráfico de projeção.
+              Configure os dados de ROI para visualizar o grÃ¡fico de projeÃ§Ã£o.
             </div>
           )}
         </div>
         
-        {/* BENEFÍCIOS */}
+        {/* BENEFÃCIOS */}
         <div className="mb-6 print-no-break">
-          <h3 className="text-base font-bold text-gray-900 mb-3">Por que escolher nossa solução?</h3>
+          <h3 className="text-base font-bold text-gray-900 mb-3">Por que escolher nossa soluÃ§Ã£o?</h3>
           <div className="grid grid-cols-2 gap-3">
             {[
-              { icon: '⚡', title: 'Implementação Rápida', text: 'Sistema operacional em até 72h após aprovação' },
-              { icon: '🔒', title: 'Dados Seguros', text: 'Infraestrutura em nuvem com backup automático' },
-              { icon: '📈', title: 'Resultados Comprovados', text: 'Clientes reportam aumento médio de 30% em conversões' },
-              { icon: '🎯', title: 'Suporte Dedicado', text: 'Equipe especializada para dúvidas e otimizações' },
+              { icon: 'âš¡', title: 'ImplementaÃ§Ã£o RÃ¡pida', text: 'Sistema operacional em atÃ© 72h apÃ³s aprovaÃ§Ã£o' },
+              { icon: 'ðŸ”’', title: 'Dados Seguros', text: 'Infraestrutura em nuvem com backup automÃ¡tico' },
+              { icon: 'ðŸ“ˆ', title: 'Resultados Comprovados', text: 'Clientes reportam aumento mÃ©dio de 30% em conversÃµes' },
+              { icon: 'ðŸŽ¯', title: 'Suporte Dedicado', text: 'Equipe especializada para dÃºvidas e otimizaÃ§Ãµes' },
             ].map((item, idx) => (
               <div key={idx} className="bg-gray-50 p-4 rounded-lg flex gap-3">
                 <span className="text-2xl">{item.icon}</span>
@@ -608,28 +608,28 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
           </div>
         </div>
         
-        {/* PRÓXIMOS PASSOS */}
+        {/* PRÃ“XIMOS PASSOS */}
         <div className="bg-blue-50 border border-blue-200 p-5 rounded-xl print-no-break">
-          <h3 className="font-bold text-blue-900 mb-3">Próximos Passos</h3>
+          <h3 className="font-bold text-blue-900 mb-3">PrÃ³ximos Passos</h3>
           <ol className="space-y-2 text-sm">
             <li className="flex items-start gap-2">
               <span className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs flex-shrink-0">1</span>
-              <span className="text-gray-700"><strong>Aprovação:</strong> Confirme esta proposta via e-mail ou assinatura digital</span>
+              <span className="text-gray-700"><strong>AprovaÃ§Ã£o:</strong> Confirme esta proposta via e-mail ou assinatura digital</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs flex-shrink-0">2</span>
-              <span className="text-gray-700"><strong>Kickoff:</strong> Reunião de alinhamento e coleta de informações</span>
+              <span className="text-gray-700"><strong>Kickoff:</strong> ReuniÃ£o de alinhamento e coleta de informaÃ§Ãµes</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs flex-shrink-0">3</span>
-              <span className="text-gray-700"><strong>Go-live:</strong> Sistema configurado e equipe treinada em até 7 dias</span>
+              <span className="text-gray-700"><strong>Go-live:</strong> Sistema configurado e equipe treinada em atÃ© 7 dias</span>
             </li>
           </ol>
         </div>
         
         {/* CTA - PAGAMENTO PIX */}
         <div className="mt-6 bg-gradient-to-r from-green-500 to-emerald-600 p-6 rounded-xl text-center no-print-button print-no-break">
-          <h3 className="text-white text-lg font-bold mb-2">Pronto para começar?</h3>
+          <h3 className="text-white text-lg font-bold mb-2">Pronto para comeÃ§ar?</h3>
           <p className="text-green-100 text-sm mb-4">
             Clique abaixo para realizar o pagamento via PIX.
           </p>
@@ -637,14 +637,14 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
             onClick={() => setShowPixModal(true)}
             className="inline-flex items-center gap-3 px-8 py-4 bg-white text-green-600 font-bold text-lg rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all"
           >
-            {/* Ícone PIX */}
+            {/* Ãcone PIX */}
             <svg className="w-6 h-6" viewBox="0 0 512 512" fill="currentColor">
               <path d="M242.4 292.5C247.8 287.1 257.1 287.1 262.5 292.5L339.5 369.5C353.7 383.7 372.6 391.5 392.6 391.5H407.7L310.6 488.6C280.3 518.1 231.1 518.1 200.8 488.6L103.3 391.2H112.6C132.6 391.2 151.5 383.4 165.7 369.2L242.4 292.5zM262.5 218.9C257.1 224.4 247.9 224.5 242.4 218.9L165.7 142.2C151.5 128 132.6 120.2 112.6 120.2H103.3L200.7 22.76C231.1-7.586 280.3-7.586 310.6 22.76L407.8 119.9H392.6C372.6 119.9 353.7 127.7 339.5 141.9L262.5 218.9zM112.6 142.7C126.4 142.7 139.1 148.3 149.7 158.1L226.4 234.8C233.6 241.1 243 245.6 252.5 245.6C ## 245.6 271.2 241.1 278.4 234.8L201.8 311.4C## 349.2 139.1 368.2 126.4 368.2 112.6V112.6C368.2 112.6 368.2 112.6 368.2 112.6L464 112.6C476.7 112.6 489.1 117.8 498.2 127C507.4 136.1 512.6 148.5 512.6 161.3V161.3C512.6 174 507.4 186.5 498.2 195.6L399.1 294.8C399.1 294.8 399.1 294.8 399.1 294.8L399.1 294.8V294.8C386.4 294.8 374 289.6 364.8 280.4L288.2 203.8C278.1 194.6 265.7 189.4 252.5 189.4c-13.2 0-25.6 5.1-34.8 14.4L141 280.4C131.8 289.6 119.4 294.8 106.7 294.8v0l0 0H48C21.5 294.8 0 273.3 0 246.8v-85.6C0 134.7 21.5 113.2 48 113.2l64.6 0V142.7H112.6z"/>
             </svg>
             Contratar Agora - {fmt(setupTotal)}
           </button>
           <p className="text-green-200 text-[10px] mt-3">
-            Pagamento instantâneo via PIX • Confirmação imediata
+            Pagamento instantÃ¢neo via PIX â€¢ ConfirmaÃ§Ã£o imediata
           </p>
         </div>
         
@@ -669,7 +669,7 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
                 <div className="text-center mb-6">
                   <p className="text-gray-500 text-sm">Valor total a pagar</p>
                   <p className="text-3xl font-bold text-gray-900">{fmt(setupTotal)}</p>
-                  <p className="text-xs text-gray-400 mt-1">Taxa de adesão (Setup inicial)</p>
+                  <p className="text-xs text-gray-400 mt-1">Taxa de adesÃ£o (Setup inicial)</p>
                 </div>
                 
                 {/* Chave PIX */}
@@ -680,7 +680,7 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
                   </p>
                 </div>
                 
-                {/* Botão Copiar */}
+                {/* BotÃ£o Copiar */}
                 <button
                   onClick={handleCopyPix}
                   className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all ${
@@ -706,7 +706,7 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
                   )}
                 </button>
                 
-                {/* Instruções */}
+                {/* InstruÃ§Ãµes */}
                 <div className="mt-4 space-y-2">
                   <p className="text-xs text-gray-500 text-center font-medium">Como pagar:</p>
                   <ol className="text-xs text-gray-500 space-y-1">
@@ -716,7 +716,7 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="w-4 h-4 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-bold">2</span>
-                      Acesse a área PIX e escolha "Pagar com PIX"
+                      Acesse a Ã¡rea PIX e escolha "Pagar com PIX"
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="w-4 h-4 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-bold">3</span>
@@ -729,7 +729,7 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
                   </ol>
                 </div>
                 
-                {/* Botão Fechar */}
+                {/* BotÃ£o Fechar */}
                 <button
                   onClick={() => setShowPixModal(false)}
                   className="w-full mt-4 py-3 text-gray-500 hover:text-gray-700 font-medium text-sm transition-colors"
@@ -743,8 +743,8 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
         
         {/* FOOTER */}
         <div className="text-center text-xs text-gray-400 mt-8 pt-4 border-t border-gray-200">
-          <p>Esta proposta foi gerada automaticamente em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
-          <p className="mt-1">Dúvidas? Entre em contato conosco.</p>
+          <p>Esta proposta foi gerada automaticamente em {new Date().toLocaleDateString('pt-BR')} Ã s {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
+          <p className="mt-1">DÃºvidas? Entre em contato conosco.</p>
         </div>
       </div>
     </div>
@@ -768,49 +768,67 @@ export default function App() {
   const [partnership, setPartnership] = useState<PartnershipModel>('whitelabel');
   const [markup, setMarkup] = useState(100);
   
-  // SISTEMA FLEXÍVEL DE PRECIFICAÇÃO
+  // SISTEMA FLEXÃVEL DE PRECIFICAÃ‡ÃƒO
   const [pricingModel, setPricingModel] = useState<PricingModel>('per_user');
-  const [userCount, setUserCount] = useState(1);  // Usuários individuais
+  const [userCount, setUserCount] = useState(1);  // UsuÃ¡rios individuais
   const [selectedFixedTier, setSelectedFixedTier] = useState<string>('tier_5');
   
-  // MODO AUTOMÁTICO VS MANUAL
-  const [isAutoPrice, setIsAutoPrice] = useState(true);  // true = automático, false = manual
+  // MODO AUTOMÃTICO VS MANUAL
+  const [isAutoPrice, setIsAutoPrice] = useState(true);  // true = automÃ¡tico, false = manual
   
   // UI STATES
   const [showOnboardingTips, setShowOnboardingTips] = useState(true);
   const [showROIExplanation, setShowROIExplanation] = useState(false);
   
-  // INPUTS EDITÁVEIS SEPARADOS
+  // INPUTS EDITÃVEIS SEPARADOS
   const [manualSetup, setManualSetup] = useState<number | null>(null);
   const [manualMonthly, setManualMonthly] = useState<number | null>(null);
   
-  // PREÇOS EDITÁVEIS DE SERVIÇOS (valores iniciais sugeridos)
+  // PREÃ‡OS EDITÃVEIS DE SERVIÃ‡OS (valores iniciais sugeridos)
   const [servicePrices, setServicePrices] = useState<Record<string, number>>({
     onboarding: 500,
     training: 1500,
     migration: 1000,
   });
   
-  // PREÇOS EDITÁVEIS DE FATORES DE COMPLEXIDADE (agora em R$, não %)
+  // PREÃ‡OS EDITÃVEIS DE FATORES DE COMPLEXIDADE (agora em R$, nÃ£o %)
   const [complexityPrices, setComplexityPrices] = useState<Record<string, number>>({
     urgencia: 500,
     presencial: 300,
     suporte: 800,
   });
   
+  // MÃ“DULO N8N - INTEGRAÃ‡Ã•ES AVANÃ‡ADAS
+  type IntegrationLevelType = 'none' | 'basic' | 'medium' | 'high' | 'custom';
+  const [integrationLevel, setIntegrationLevel] = useState<IntegrationLevelType>('none');
+  const [integrationCustomPrice, setIntegrationCustomPrice] = useState(5000);
+  
+  const INTEGRATION_OPTIONS = {
+    none: { label: 'Nenhuma', price: 0, description: 'Sem integraÃ§Ãµes externas' },
+    basic: { label: 'Baixa - Webhooks', price: 1000, description: 'Webhooks simples e notificaÃ§Ãµes' },
+    medium: { label: 'MÃ©dia - Google/Zapier', price: 3000, description: 'Planilhas, Make, Zapier' },
+    high: { label: 'Alta - ERP/Banco de Dados', price: 8000, description: 'SAP, Oracle, PostgreSQL, APIs' },
+    custom: { label: 'Personalizada', price: 0, description: 'Valor definido manualmente' },
+  };
+  
+  const integrationPrice = useMemo(() => {
+    if (integrationLevel === 'custom') return integrationCustomPrice;
+    return INTEGRATION_OPTIONS[integrationLevel].price;
+  }, [integrationLevel, integrationCustomPrice]);
+  
   const [roi, setRoi] = useState<ROIInputs>({ ticketMedio: 2000, leadsPerMonth: 100, conversionRate: 5, improvementPercent: 20 });
   
   // CALCULATIONS (Sistema Legado - mantido para retrocompatibilidade)
   const dynamicSetup = useMemo(() => calculateDynamicSetup(features), [features]);
   
-  // NOVO: Soma de serviços usando preços editáveis
+  // NOVO: Soma de serviÃ§os usando preÃ§os editÃ¡veis
   const editableServicesTotal = useMemo(() => {
     return services
       .filter(id => ['onboarding', 'training', 'migration'].includes(id))
       .reduce((sum, id) => sum + (servicePrices[id] || 0), 0);
   }, [services, servicePrices]);
   
-  // NOVO: Soma de fatores de complexidade usando valores em R$ (não mais %)
+  // NOVO: Soma de fatores de complexidade usando valores em R$ (nÃ£o mais %)
   const editableComplexityTotal = useMemo(() => {
     return services
       .filter(id => ['urgencia', 'presencial', 'suporte'].includes(id))
@@ -823,7 +841,7 @@ export default function App() {
   const calcMonthly = useMemo(() => calculateFinalPrice(baseCost, markup, complexityPct), [baseCost, markup, complexityPct]);
   const roiCalc = useMemo(() => calculateROI(roi), [roi]);
   
-  // NOVO: Cálculos do Sistema Flexível
+  // NOVO: CÃ¡lculos do Sistema FlexÃ­vel
   const effectiveUserCount = useMemo(() => {
     if (pricingModel === 'fixed_tier') {
       const fixedTier = FIXED_TIERS.find(t => t.id === selectedFixedTier);
@@ -863,10 +881,10 @@ export default function App() {
   );
   
   // VALORES FINAIS (calculado ou manual)
-  // Setup agora usa preços editáveis de serviços + fatores de complexidade
-  const calcSetup = dynamicSetup + editableServicesTotal + editableComplexityTotal;
+  // Setup agora usa preÃ§os editÃ¡veis de serviÃ§os + fatores de complexidade + integraÃ§Ãµes
+  const calcSetup = dynamicSetup + editableServicesTotal + editableComplexityTotal + integrationPrice;
   const finalSetup = manualSetup ?? calcSetup;
-  // Usar preço flexível se modelo não for fixed_tier (legado)
+  // Usar preÃ§o flexÃ­vel se modelo nÃ£o for fixed_tier (legado)
   const finalMonthly = manualMonthly ?? (pricingModel === 'fixed_tier' ? calcMonthly : flexibleMonthlyPrice);
   
   const profit = useMemo(() => calculateProfit(partnership, finalMonthly, flexibleInternalCost), [partnership, finalMonthly, flexibleInternalCost]);
@@ -879,7 +897,7 @@ export default function App() {
   const paybackMonth = useMemo(() => findPaybackMonth(profitData), [profitData]);
   const yearlyProfit = useMemo(() => calculateYearlyProfit(profitData), [profitData]);
   
-  // EXPLICAÇÃO DETALHADA DO ROI
+  // EXPLICAÃ‡ÃƒO DETALHADA DO ROI
   const roiExplanation = useMemo(() => generateROIExplanation(roi), [roi]);
   
   // BREAKDOWN DE CUSTOS
@@ -907,8 +925,7 @@ export default function App() {
   }, [features.whatsapp]);
   
   const toggleService = useCallback((id: string) => {
-    const svc = SERVICES_LIST.find(s => s.id === id);
-    if (!svc || svc.required) return;
+    // BUGFIX: Removida verificaÃ§Ã£o svc.required - qualquer serviÃ§o pode ser desmarcado
     setServices(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id]);
     setManualSetup(null);
     setManualMonthly(null);
@@ -916,7 +933,7 @@ export default function App() {
   
   // WIZARD PRESET HANDLER
   const applyWizardPreset = useCallback((preset: CalculatorPreset) => {
-    // Aplicar todas as configurações do wizard
+    // Aplicar todas as configuraÃ§Ãµes do wizard
     setUserCount(preset.userCount);
     setPricingModel(preset.pricingModel);
     setPlan(preset.plan);
@@ -998,7 +1015,7 @@ export default function App() {
             className="px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 hover:from-blue-600 hover:to-blue-800 transition-all shadow-sm"
           >
             <span className="material-symbols-outlined text-sm">auto_fix_high</span>
-            Novo Diagnóstico
+            Novo DiagnÃ³stico
           </button>
           <button onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')} className={`p-2 rounded-lg ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}>
             <span className="material-symbols-outlined text-sm">{isDark ? 'light_mode' : 'dark_mode'}</span>
@@ -1006,431 +1023,43 @@ export default function App() {
         </div>
       </nav>
       
-      <main className="max-w-7xl mx-auto p-4 grid lg:grid-cols-12 gap-4">
-        {/* LEFT COLUMN - 4 cols */}
-        <div className="lg:col-span-4 flex flex-col gap-3">
-          <div className="flex gap-2">
-            {(['config', 'pricing', 'roi'] as const).map(t => (
-              <button key={t} onClick={() => setActiveTab(t)} className={`flex-1 py-2 px-3 text-xs font-medium rounded-lg flex items-center justify-center gap-1.5 ${activeTab === t ? 'bg-blue-600 text-white' : isDark ? 'bg-slate-700 text-slate-400' : 'bg-gray-100 text-gray-500'}`}>
-                <span className="material-symbols-outlined text-sm">{t === 'config' ? 'tune' : t === 'pricing' ? 'payments' : 'insights'}</span>
-                {t === 'config' ? 'Config' : t === 'pricing' ? 'Preço' : 'ROI'}
-              </button>
-            ))}
-          </div>
-          
-          {/* Onboarding Tip */}
-          <OnboardingTip 
-            tipKey={activeTab} 
-            isVisible={showOnboardingTips} 
-            onToggle={() => setShowOnboardingTips(!showOnboardingTips)}
-            isDark={isDark}
-          />
-          {activeTab === 'config' ? (
-            <>
-              {/* Client */}
-              <div className={`${card} border rounded-xl p-3`}>
-                <h2 className={`font-semibold text-sm mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Cliente</h2>
-                <div className="space-y-2">
-                  <input value={client.companyName} onChange={e => setClient(c => ({...c, companyName: e.target.value}))} placeholder="Empresa" className={`w-full ${input} border rounded-lg px-3 py-1.5 text-sm`} />
-                  <input value={client.contactName} onChange={e => setClient(c => ({...c, contactName: e.target.value}))} placeholder="Contato" className={`w-full ${input} border rounded-lg px-3 py-1.5 text-sm`} />
-                </div>
-              </div>
-              
-              {/* Plan */}
-              <div className={`${card} border rounded-xl p-3`}>
-                <h2 className={`font-semibold text-sm mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Plano</h2>
-                <div className="space-y-1 mb-2">
-                  {(['start', 'pro', 'enterprise'] as PlanLevel[]).map(p => (
-                    <button key={p} onClick={() => selectPlan(p)} className={`w-full py-1.5 px-2 rounded-lg text-left flex justify-between items-center text-sm ${plan === p ? 'bg-blue-600 text-white' : isDark ? 'bg-slate-700 text-slate-300' : 'bg-gray-100 text-gray-600'}`}>
-                      <span className="font-medium capitalize">{p}</span>
-                      {plan === p && <span className="material-symbols-outlined text-sm">check</span>}
-                    </button>
-                  ))}
-                </div>
-                <div className="space-y-0.5">
-                  {USER_TIERS.map(t => (
-                    <button key={t.id} onClick={() => { setTier(t); setPlan(t.linkedPlan); setManualSetup(null); setManualMonthly(null); }} className={`w-full py-1 px-2 rounded text-[11px] text-left flex justify-between ${tier.id === t.id ? 'bg-blue-600 text-white' : isDark ? 'bg-slate-700/50 text-slate-400' : 'bg-gray-50 text-gray-600'}`}>
-                      <span>{t.label}</span>
-                      <span className="font-mono opacity-75">{fmt(INTERNAL_PRICING.CRM_PER_USER * t.maxUsers)}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </>
-          ) : activeTab === 'pricing' ? (
-            /* PRICING Tab - Sistema Flexível */
-            <>
-              {/* Modelo de Precificação */}
-              <div className={`${card} border rounded-xl p-3`}>
-                <h2 className={`font-semibold text-sm mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                  Modelo de Precificação
-                </h2>
-                
-                {/* Toggle Auto/Manual */}
-                <PriceModeToggle
-                  isAuto={isAutoPrice}
-                  onToggle={() => {
-                    setIsAutoPrice(!isAutoPrice);
-                    if (!isAutoPrice) {
-                      setManualMonthly(null);
-                      setManualSetup(null);
-                    }
-                  }}
-                  isDark={isDark}
-                />
-                
-                <div className="space-y-2 mt-3">
-                  {(Object.keys(PRICING_MODELS) as PricingModel[]).map(model => {
-                    const m = PRICING_MODELS[model];
-                    return (
-                      <button
-                        key={model}
-                        onClick={() => { setPricingModel(model); setManualMonthly(null); }}
-                        className={`w-full p-3 rounded-lg text-left transition-all ${
-                          pricingModel === model
-                            ? 'bg-blue-600 text-white ring-2 ring-blue-400'
-                            : isDark
-                              ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                              : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <span className="material-symbols-outlined text-base">{m.icon}</span>
-                          <span className="font-medium text-sm">{m.label}</span>
-                        </div>
-                        <p className={`text-[10px] mt-1 ${pricingModel === model ? 'text-blue-100' : isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                          {m.description}
-                        </p>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Configuração de Usuários */}
-              <div className={`${card} border rounded-xl p-3`}>
-                <h2 className={`font-semibold text-sm mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                  {pricingModel === 'fixed_tier' ? 'Pacote de Usuários' : 'Quantidade de Usuários'}
-                </h2>
-                
-                {pricingModel === 'fixed_tier' ? (
-                  /* Seleção de Tier Fixo */
-                  <div className="space-y-1">
-                    {FIXED_TIERS.map(t => (
-                      <button
-                        key={t.id}
-                        onClick={() => { setSelectedFixedTier(t.id); setManualMonthly(null); }}
-                        className={`w-full py-2 px-3 rounded-lg text-left flex justify-between items-center ${
-                          selectedFixedTier === t.id
-                            ? 'bg-blue-600 text-white'
-                            : isDark
-                              ? 'bg-slate-700/50 text-slate-300 hover:bg-slate-600'
-                              : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-                        }`}
-                      >
-                        <span className="text-sm">{t.label}</span>
-                        <span className="font-mono text-sm font-bold">{fmt(t.monthlyPrice)}</span>
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  /* Seleção por Quantidade */
-                  <div className="space-y-3">
-                    {/* Contador */}
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => setUserCount(Math.max(1, userCount - 1))}
-                        disabled={userCount <= 1}
-                        className={`w-10 h-10 rounded-lg text-lg font-bold transition-all ${
-                          userCount <= 1
-                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                            : isDark
-                              ? 'bg-slate-600 text-white hover:bg-slate-500'
-                              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                        }`}
-                      >
-                        −
-                      </button>
-                      <input
-                        type="number"
-                        min={1}
-                        max={100}
-                        value={userCount}
-                        onChange={e => setUserCount(Math.max(1, Math.min(100, +e.target.value || 1)))}
-                        className={`flex-1 text-center text-2xl font-bold py-2 rounded-lg ${input} border`}
-                      />
-                      <button
-                        onClick={() => setUserCount(Math.min(100, userCount + 1))}
-                        disabled={userCount >= 100}
-                        className={`w-10 h-10 rounded-lg text-lg font-bold transition-all ${
-                          userCount >= 100
-                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                            : isDark
-                              ? 'bg-slate-600 text-white hover:bg-slate-500'
-                              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                        }`}
-                      >
-                        +
-                      </button>
-                    </div>
-                    
-                    {/* Atalhos */}
-                    <div className="flex gap-1 flex-wrap">
-                      {[1, 2, 3, 5, 10, 20].map(n => (
-                        <button
-                          key={n}
-                          onClick={() => setUserCount(n)}
-                          className={`px-3 py-1 rounded text-xs font-medium transition-all ${
-                            userCount === n
-                              ? 'bg-blue-600 text-white'
-                              : isDark
-                                ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                          }`}
-                        >
-                          {n}
-                        </button>
-                      ))}
-                    </div>
-                    
-                    {/* Info do Range */}
-                    <div className={`p-3 rounded-lg ${isDark ? 'bg-slate-700' : 'bg-blue-50'}`}>
-                      <div className="flex justify-between items-center mb-1">
-                        <span className={`text-xs font-bold ${isDark ? 'text-slate-300' : 'text-blue-700'}`}>
-                          {userPriceRange.label}
-                        </span>
-                        {userPriceRange.discount > 0 && (
-                          <span className="text-xs font-bold text-green-500">
-                            -{userPriceRange.discount}% desconto
-                          </span>
-                        )}
-                      </div>
-                      <p className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-blue-600'}`}>
-                        {fmt(userPriceRange.pricePerUser)}/usuário × {userCount} = <strong>{fmt(userPriceRange.pricePerUser * userCount)}</strong>
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Breakdown de Custos */}
-              <div className={`${card} border rounded-xl p-3`}>
-                <h2 className={`font-semibold text-sm mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                  Composição do Custo
-                </h2>
-                <div className="space-y-2">
-                  {costBreakdown.items.map((item, i) => (
-                    <div 
-                      key={i} 
-                      className={`p-2 rounded-lg flex justify-between items-center ${
-                        item.total > 0 
-                          ? (isDark ? 'bg-slate-700/50' : 'bg-gray-50')
-                          : (isDark ? 'bg-slate-800/30' : 'bg-gray-50/50')
-                      }`}
-                    >
-                      <div className="flex-1">
-                        <p className={`text-xs font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
-                          {item.label}
-                        </p>
-                        <p className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
-                          {item.isPerUser && item.quantity 
-                            ? `${fmt(item.unitPrice)}/usuário × ${item.quantity}` 
-                            : item.description}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className={`text-sm font-bold font-mono ${
-                          item.total > 0 
-                            ? (isDark ? 'text-white' : 'text-gray-900')
-                            : 'text-green-500'
-                        }`}>
-                          {item.total === 0 ? 'Incluso' : fmt(item.total)}
-                        </p>
-                        {item.isPerUser && item.total > 0 && (
-                          <p className={`text-[9px] ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                            /mês
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                  
-                  {/* Total de Custo */}
-                  <div className={`p-2 rounded-lg ${isDark ? 'bg-orange-500/20' : 'bg-orange-50'} border-2 border-dashed ${isDark ? 'border-orange-500/30' : 'border-orange-200'}`}>
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className={`text-xs font-bold ${isDark ? 'text-orange-400' : 'text-orange-700'}`}>
-                          Seu Custo Total
-                        </p>
-                        <p className={`text-[10px] ${isDark ? 'text-orange-500/70' : 'text-orange-600'}`}>
-                          Custo mínimo: {fmt(FINANCIAL_RULES.MIN_MONTHLY_COST)}
-                        </p>
-                      </div>
-                      <p className={`text-lg font-bold font-mono ${isDark ? 'text-orange-400' : 'text-orange-700'}`}>
-                        {fmt(costBreakdown.total)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Resumo do Preço */}
-              <div className={`${card} border rounded-xl p-3`}>
-                <h2 className={`font-semibold text-sm mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Resumo</h2>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className={isDark ? 'text-slate-400' : 'text-gray-500'}>Usuários</span>
-                    <span className={`font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{effectiveUserCount}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className={isDark ? 'text-slate-400' : 'text-gray-500'}>Custo interno</span>
-                    <span className={`font-mono ${isDark ? 'text-white' : 'text-gray-900'}`}>{fmt(flexibleInternalCost)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className={isDark ? 'text-slate-400' : 'text-gray-500'}>Preço de venda</span>
-                    <span className={`font-bold font-mono ${isDark ? 'text-white' : 'text-gray-900'}`}>{fmt(flexibleMonthlyPrice)}</span>
-                  </div>
-                  <hr className={isDark ? 'border-slate-600' : 'border-gray-200'} />
-                  <div className={`p-2 rounded-lg ${flexibleProfit.profit >= 0 ? (isDark ? 'bg-green-500/20' : 'bg-green-50') : (isDark ? 'bg-red-500/20' : 'bg-red-50')}`}>
-                    <div className="flex justify-between items-center">
-                      <span className={`text-xs font-bold ${flexibleProfit.profit >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                        Seu Lucro Mensal
-                      </span>
-                      <span className={`text-lg font-bold ${flexibleProfit.profit >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                        {fmt(flexibleProfit.profit)}
-                      </span>
-                    </div>
-                    <p className={`text-[10px] mt-0.5 ${flexibleProfit.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      Margem: {flexibleProfit.margin}%
-                    </p>
-                  </div>
-                  
-                  {/* Validação de Preço Mínimo */}
-                  <div className={`p-2 rounded text-xs ${priceValidation.isValid ? (isDark ? 'bg-green-500/10 text-green-400' : 'bg-green-50 text-green-700') : (isDark ? 'bg-red-500/10 text-red-400' : 'bg-red-50 text-red-700')}`}>
-                    {priceValidation.message}
-                  </div>
-                </div>
-              </div>
-            </>
-          ) : (
-            /* ROI Tab */
-            <div className={`${card} border rounded-xl p-3`}>
-              <h2 className={`font-semibold text-sm mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Calculadora ROI</h2>
-              <div className="space-y-2">
-                <div>
-                  <Tooltip text={ROI_TOOLTIPS.ticketMedio}>
-                    <label className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Ticket Médio</label>
-                  </Tooltip>
-                  <input type="number" value={roi.ticketMedio} onChange={e => setRoi(r => ({...r, ticketMedio: +e.target.value}))} className={`w-full mt-1 ${input} border rounded-lg px-3 py-1.5 text-sm`} />
-                </div>
-                <div>
-                  <Tooltip text={ROI_TOOLTIPS.leadsPerMonth}>
-                    <label className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Leads/mês</label>
-                  </Tooltip>
-                  <input type="number" value={roi.leadsPerMonth} onChange={e => setRoi(r => ({...r, leadsPerMonth: +e.target.value}))} className={`w-full mt-1 ${input} border rounded-lg px-3 py-1.5 text-sm`} />
-                </div>
-                <div>
-                  <Tooltip text={ROI_TOOLTIPS.conversionRate}>
-                    <label className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Taxa Conversão (%)</label>
-                  </Tooltip>
-                  <input type="number" value={roi.conversionRate} onChange={e => setRoi(r => ({...r, conversionRate: +e.target.value}))} className={`w-full mt-1 ${input} border rounded-lg px-3 py-1.5 text-sm`} />
-                </div>
-                <div className={`p-2 rounded-lg ${isDark ? 'bg-slate-700' : 'bg-blue-50'}`}>
-                  <div className="flex justify-between items-center mb-1">
-                    <Tooltip text={ROI_TOOLTIPS.improvement}>
-                      <label className={`text-[10px] ${isDark ? 'text-slate-300' : 'text-blue-700'}`}>Melhoria</label>
-                    </Tooltip>
-                    <span className={`text-sm font-bold ${isDark ? 'text-white' : 'text-blue-700'}`}>+{roi.improvementPercent}%</span>
-                  </div>
-                  <input type="range" min={5} max={50} step={5} value={roi.improvementPercent} onChange={e => setRoi(r => ({...r, improvementPercent: +e.target.value}))} className="w-full accent-blue-600" />
-                </div>
-              </div>
-              
-              {/* Receita Recuperada com Explicação Detalhada */}
-              <div className={`rounded-lg mt-2 overflow-hidden ${isDark ? 'bg-green-500/20' : 'bg-green-50'}`}>
-                <div className="p-3">
-                  <div className="flex items-center justify-between mb-1">
-                    <p className="text-[9px] uppercase font-bold text-green-500">Receita Recuperada</p>
-                    <button
-                      onClick={() => setShowROIExplanation(!showROIExplanation)}
-                      className="text-[10px] text-green-600 hover:underline flex items-center gap-0.5"
-                    >
-                      <span className="material-symbols-outlined text-xs">
-                        {showROIExplanation ? 'visibility_off' : 'calculate'}
-                      </span>
-                      {showROIExplanation ? 'Ocultar' : 'Ver cálculo'}
-                    </button>
-                  </div>
-                  <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-green-700'}`}>+{fmt(roiCalc.recoveredRevenue)}/mês</p>
-                </div>
-                
-                {/* Explicação Detalhada */}
-                {showROIExplanation && (
-                  <div className={`px-3 pb-3 space-y-2 animate-fadeIn ${isDark ? 'bg-slate-800/50' : 'bg-green-100/50'}`}>
-                    <p className={`text-[10px] font-bold ${isDark ? 'text-slate-300' : 'text-green-800'}`}>
-                      📊 Explicação do Cálculo:
-                    </p>
-                    <div className="space-y-1.5">
-                      {roiExplanation.steps.map((step, i) => (
-                        <div 
-                          key={i} 
-                          className={`p-2 rounded ${
-                            i === roiExplanation.steps.length - 1 
-                              ? (isDark ? 'bg-green-600/30' : 'bg-green-200') 
-                              : (isDark ? 'bg-slate-700/50' : 'bg-white/70')
-                          }`}
-                        >
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <p className={`text-[10px] font-bold ${
-                                i === roiExplanation.steps.length - 1 
-                                  ? 'text-green-500' 
-                                  : (isDark ? 'text-slate-300' : 'text-gray-700')
-                              }`}>
-                                {step.label}
-                              </p>
-                              <p className={`text-[9px] font-mono ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
-                                {step.formula}
-                              </p>
-                            </div>
-                            <p className={`text-sm font-bold ${
-                              i === roiExplanation.steps.length - 1 
-                                ? 'text-green-500' 
-                                : (isDark ? 'text-white' : 'text-gray-900')
-                            }`}>
-                              {step.value}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    <p className={`text-[10px] ${isDark ? 'text-green-400' : 'text-green-700'} italic`}>
-                      💡 {roiExplanation.finalMessage}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+      <main className="max-w-7xl mx-auto p-4">
+        {/* Dashboard Header */}
+        <div className="mb-4">
+          <h1 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            Dashboard de PrecificaÃ§Ã£o
+          </h1>
+          <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+            Configure escopo, serviÃ§os e visualize o ROI em tempo real
+          </p>
         </div>
         
-        {/* MIDDLE COLUMN - 4 cols */}
+        {/* UNIFIED 3-COLUMN LAYOUT */}
+        <div className="grid lg:grid-cols-12 gap-4">
+        
+        {/* COLUNA 1: ESCOPO TÃ‰CNICO (4 cols) */}
         <div className="lg:col-span-4 flex flex-col gap-3">
-          {/* Features with Tooltips */}
+          
+          {/* Card: Infraestrutura Bolten */}
           <div className={`${card} border rounded-xl p-3`}>
-            <h2 className={`font-semibold text-sm mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Funcionalidades</h2>
-            <div className="grid sm:grid-cols-2 gap-2">
+            <h2 className={`font-semibold text-sm mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              ðŸ”§ Infraestrutura Bolten
+            </h2>
+            <div className="grid grid-cols-2 gap-2">
               {(['crm', 'whatsapp', 'ai', 'conversions'] as (keyof FeatureState)[]).map(k => {
                 const disabled = k === 'ai' && !features.whatsapp;
+                const labels = { crm: 'CRM', whatsapp: 'WhatsApp', ai: 'IA', conversions: 'ConversÃµes' };
                 return (
-                  <div key={k} onClick={() => !disabled && toggleFeature(k)} className={`p-2 rounded-lg border cursor-pointer ${disabled ? 'opacity-40' : ''} ${features[k] ? 'border-blue-500 bg-blue-500/10' : isDark ? 'border-slate-600' : 'border-gray-200'}`}>
+                  <div 
+                    key={k} 
+                    onClick={() => !disabled && toggleFeature(k)} 
+                    className={`p-2 rounded-lg border cursor-pointer transition-all ${disabled ? 'opacity-40' : ''} ${features[k] ? 'border-blue-500 bg-blue-500/10' : isDark ? 'border-slate-600' : 'border-gray-200'}`}
+                  >
                     <div className="flex items-center gap-2">
                       <input type="checkbox" checked={features[k]} readOnly className="w-3.5 h-3.5 accent-blue-600" />
-                      <Tooltip text={FEATURE_TOOLTIPS[k]}>
-                        <span className={`text-sm font-medium ${features[k] ? 'text-blue-500' : ''}`}>
-                          {k === 'crm' ? 'CRM' : k === 'whatsapp' ? 'WhatsApp' : k === 'ai' ? 'IA' : 'Conversões'}
-                        </span>
-                      </Tooltip>
+                      <span className={`text-sm font-medium ${features[k] ? 'text-blue-500' : ''}`}>
+                        {labels[k]}
+                      </span>
                     </div>
                   </div>
                 );
@@ -1438,52 +1067,208 @@ export default function App() {
             </div>
           </div>
           
-          {/* RICH SERVICE LIST - COM PREÇOS EDITÁVEIS */}
+          {/* Card: IntegraÃ§Ãµes AvanÃ§adas (N8N) - NOVO! */}
           <div className={`${card} border rounded-xl p-3`}>
-            <div className="flex justify-between items-center mb-3">
-              <h2 className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>Menu de Serviços</h2>
-              <span className="text-[8px] bg-orange-500/20 text-orange-500 px-2 py-1 rounded-full font-bold">TAXA ÚNICA</span>
+            <div className="flex justify-between items-center mb-2">
+              <h2 className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                ðŸ”Œ AutomaÃ§Ã£o & IntegraÃ§Ãµes
+              </h2>
+              {integrationPrice > 0 && (
+                <span className="text-xs bg-purple-500 text-white px-2 py-0.5 rounded-full font-bold">
+                  +{fmt(integrationPrice)}
+                </span>
+              )}
+            </div>
+            <select
+              value={integrationLevel}
+              onChange={e => setIntegrationLevel(e.target.value as IntegrationLevelType)}
+              className={`w-full p-2.5 rounded-lg text-sm font-medium ${input} border mb-2`}
+            >
+              {(Object.entries(INTEGRATION_OPTIONS) as [IntegrationLevelType, typeof INTEGRATION_OPTIONS.none][]).map(([key, opt]) => (
+                <option key={key} value={key}>
+                  {opt.label} {key !== 'none' && key !== 'custom' ? `(+${fmt(opt.price)})` : ''}
+                </option>
+              ))}
+            </select>
+            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+              {INTEGRATION_OPTIONS[integrationLevel].description}
+            </p>
+            {integrationLevel === 'custom' && (
+              <div className="mt-2 flex items-center gap-2">
+                <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>R$</span>
+                <input
+                  type="number"
+                  value={integrationCustomPrice}
+                  onChange={e => setIntegrationCustomPrice(+e.target.value || 0)}
+                  className={`flex-1 py-1.5 px-3 rounded-lg text-sm font-bold ${input} border`}
+                />
+              </div>
+            )}
+          </div>
+          
+          {/* Card: Faixa de UsuÃ¡rios */}
+          <div className={`${card} border rounded-xl p-3`}>
+            <h2 className={`font-semibold text-sm mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              ðŸ‘¥ Quantidade de UsuÃ¡rios
+            </h2>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setUserCount(Math.max(1, userCount - 1))}
+                disabled={userCount <= 1}
+                className={`w-10 h-10 rounded-lg text-lg font-bold ${userCount <= 1 ? 'bg-gray-200 text-gray-400' : isDark ? 'bg-slate-600 text-white hover:bg-slate-500' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+              >âˆ’</button>
+              <input
+                type="number"
+                min={1}
+                max={100}
+                value={userCount}
+                onChange={e => setUserCount(Math.max(1, Math.min(100, +e.target.value || 1)))}
+                className={`flex-1 text-center text-2xl font-bold py-2 rounded-lg ${input} border`}
+              />
+              <button
+                onClick={() => setUserCount(Math.min(100, userCount + 1))}
+                disabled={userCount >= 100}
+                className={`w-10 h-10 rounded-lg text-lg font-bold ${userCount >= 100 ? 'bg-gray-200 text-gray-400' : isDark ? 'bg-slate-600 text-white hover:bg-slate-500' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+              >+</button>
+            </div>
+            <div className="flex gap-1 flex-wrap mt-2">
+              {[1, 2, 5, 10, 20, 50].map(n => (
+                <button
+                  key={n}
+                  onClick={() => setUserCount(n)}
+                  className={`px-3 py-1 rounded text-xs font-medium ${userCount === n ? 'bg-blue-600 text-white' : isDark ? 'bg-slate-700 text-slate-300' : 'bg-gray-100 text-gray-600'}`}
+                >{n}</button>
+              ))}
+            </div>
+            {/* Price per user info */}
+            <div className={`mt-2 p-2 rounded-lg ${isDark ? 'bg-slate-700/50' : 'bg-blue-50'}`}>
+              <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-blue-700'}`}>
+                {fmt(userPriceRange.pricePerUser)}/usuÃ¡rio Ã— {userCount} = <strong>{fmt(flexibleMonthlyPrice)}/mÃªs</strong>
+              </p>
+            </div>
+          </div>
+          
+          {/* Client Card (simplified) */}
+          <div className={`${card} border rounded-xl p-3`}>
+            <h2 className={`font-semibold text-sm mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>ðŸ“ Cliente</h2>
+            <input
+              value={client.companyName}
+              onChange={e => setClient(c => ({...c, companyName: e.target.value}))}
+              placeholder="Empresa"
+              className={`w-full text-sm ${input} border rounded-lg px-3 py-1.5 mb-2`}
+            />
+            <input
+              value={client.contactName}
+              onChange={e => setClient(c => ({...c, contactName: e.target.value}))}
+              placeholder="Contato"
+              className={`w-full text-sm ${input} border rounded-lg px-3 py-1.5`}
+            />
+          </div>
+        </div>
+        
+        {/* COLUNA 2: SERVIÃ‡OS & VALOR (4 cols) */}
+        <div className="lg:col-span-4 flex flex-col gap-3">
+          
+          {/* Card: Calculadora de ROI (Compact) */}
+          <div className={`${card} border rounded-xl p-3`}>
+            <h2 className={`font-semibold text-sm mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>ðŸ“ˆ Calculadora de ROI</h2>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Ticket MÃ©dio</label>
+                <div className="flex items-center">
+                  <span className={`text-xs px-1.5 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>R$</span>
+                  <input 
+                    type="number" 
+                    value={roi.ticketMedio} 
+                    onChange={e => setRoi(r => ({...r, ticketMedio: +e.target.value}))} 
+                    className={`flex-1 text-sm font-bold ${input} border rounded px-2 py-1`} 
+                  />
+                </div>
+              </div>
+              <div>
+                <label className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Leads/mÃªs</label>
+                <input 
+                  type="number" 
+                  value={roi.leadsPerMonth} 
+                  onChange={e => setRoi(r => ({...r, leadsPerMonth: +e.target.value}))} 
+                  className={`w-full text-sm font-bold ${input} border rounded px-2 py-1`} 
+                />
+              </div>
+              <div>
+                <label className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>ConversÃ£o Atual</label>
+                <div className="flex items-center">
+                  <input 
+                    type="number" 
+                    value={roi.conversionRate} 
+                    onChange={e => setRoi(r => ({...r, conversionRate: +e.target.value}))} 
+                    className={`flex-1 text-sm font-bold ${input} border rounded px-2 py-1`} 
+                  />
+                  <span className={`text-xs px-1 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>%</span>
+                </div>
+              </div>
+              <div>
+                <label className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Melhoria Esperada</label>
+                <div className="flex items-center">
+                  <input 
+                    type="number" 
+                    min={0}
+                    max={500}
+                    value={roi.improvementPercent} 
+                    onChange={e => setRoi(r => ({...r, improvementPercent: Math.min(500, +e.target.value)}))} 
+                    className={`flex-1 text-sm font-bold ${input} border rounded px-2 py-1`} 
+                  />
+                  <span className={`text-xs px-1 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>%</span>
+                </div>
+              </div>
+            </div>
+            {/* Slider de Melhoria (0-500%) */}
+            <div className="mt-2">
+              <input 
+                type="range" 
+                min={0} 
+                max={500} 
+                step={5} 
+                value={roi.improvementPercent} 
+                onChange={e => setRoi(r => ({...r, improvementPercent: +e.target.value}))} 
+                className="w-full accent-green-600" 
+              />
+              <div className="flex justify-between text-[9px] text-slate-500">
+                <span>0%</span>
+                <span>100%</span>
+                <span>250%</span>
+                <span>500%</span>
+              </div>
+            </div>
+            {/* ROI Result */}
+            <div className={`mt-2 p-2 rounded-lg ${isDark ? 'bg-green-500/20' : 'bg-green-50'}`}>
+              <p className="text-[9px] uppercase font-bold text-green-500">Receita Recuperada</p>
+              <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-green-700'}`}>+{fmt(roiCalc.recoveredRevenue)}/mÃªs</p>
+            </div>
+          </div>
+          
+          {/* Card: ServiÃ§os de ImplementaÃ§Ã£o */}
+          <div className={`${card} border rounded-xl p-3`}>
+            <div className="flex justify-between items-center mb-2">
+              <h2 className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>ðŸ› ï¸ ServiÃ§os</h2>
+              <span className="text-[8px] bg-orange-500/20 text-orange-500 px-2 py-0.5 rounded-full font-bold">SETUP</span>
             </div>
             <div className="space-y-2">
               {fixedServices.map(svc => {
                 const isSelected = services.includes(svc.id);
                 const price = servicePrices[svc.id] ?? svc.cost;
                 return (
-                  <div 
-                    key={svc.id}
-                    className={`p-3 rounded-lg border transition-all ${
-                      isSelected 
-                        ? 'border-blue-500 bg-blue-500/10' 
-                        : isDark 
-                          ? 'border-slate-600 hover:border-slate-500' 
-                          : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <div className="flex items-start gap-3">
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => toggleService(svc.id)}
-                        className="w-4 h-4 mt-0.5 accent-blue-600"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <p className={`text-sm font-medium ${isSelected ? 'text-blue-600' : isDark ? 'text-slate-200' : 'text-gray-800'}`}>
-                          {svc.label}
-                        </p>
-                        <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
-                          {svc.description}
-                        </p>
-                      </div>
+                  <div key={svc.id} className={`p-2 rounded-lg border transition-all ${isSelected ? 'border-blue-500 bg-blue-500/10' : isDark ? 'border-slate-600' : 'border-gray-200'}`}>
+                    <div className="flex items-center gap-2">
+                      <input type="checkbox" checked={isSelected} onChange={() => toggleService(svc.id)} className="w-4 h-4 accent-blue-600" />
+                      <span className={`text-sm flex-1 ${isSelected ? 'text-blue-600 font-medium' : ''}`}>{svc.label}</span>
                       {isSelected && (
-                        <div className="flex items-center gap-1.5">
-                          <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>R$</span>
+                        <div className="flex items-center gap-1">
+                          <span className="text-xs text-slate-400">R$</span>
                           <input
                             type="number"
                             value={price}
                             onChange={e => setServicePrices(p => ({ ...p, [svc.id]: +e.target.value }))}
-                            className={`w-20 text-sm font-bold text-right py-1 px-2 rounded ${
-                              isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
-                            } border`}
+                            className={`w-16 text-xs font-bold text-right py-0.5 px-1 rounded ${input} border`}
                           />
                         </div>
                       )}
@@ -1492,193 +1277,130 @@ export default function App() {
                 );
               })}
             </div>
-            
-            {/* Complexity Factors - COM VALORES EM R$ */}
-            <div className={`mt-4 pt-3 border-t ${isDark ? 'border-slate-600' : 'border-gray-200'}`}>
-              <div className="flex justify-between items-center mb-3">
-                <h3 className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>Fatores de Complexidade</h3>
-                <span className="text-[8px] bg-green-500/20 text-green-500 px-2 py-1 rounded-full font-bold">+ R$ NO SETUP</span>
-              </div>
-              <div className="space-y-2">
-                {complexityFactors.map(svc => {
-                  const isSelected = services.includes(svc.id);
-                  const price = complexityPrices[svc.id] ?? 0;
-                  return (
-                    <div 
-                      key={svc.id}
-                      className={`p-3 rounded-lg border transition-all ${
-                        isSelected 
-                          ? 'border-green-500 bg-green-500/10' 
-                          : isDark 
-                            ? 'border-slate-600 hover:border-slate-500' 
-                            : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className="flex items-start gap-3">
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => toggleService(svc.id)}
-                          className="w-4 h-4 mt-0.5 accent-green-600"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p className={`text-sm font-medium ${isSelected ? 'text-green-600' : isDark ? 'text-slate-200' : 'text-gray-800'}`}>
-                            {svc.label}
-                          </p>
-                          <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
-                            {svc.description}
-                          </p>
+          </div>
+          
+          {/* Card: Fatores de Complexidade */}
+          <div className={`${card} border rounded-xl p-3`}>
+            <div className="flex justify-between items-center mb-2">
+              <h2 className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>âš¡ Complexidade</h2>
+              <span className="text-[8px] bg-green-500/20 text-green-500 px-2 py-0.5 rounded-full font-bold">+ R$ SETUP</span>
+            </div>
+            <div className="space-y-2">
+              {complexityFactors.map(svc => {
+                const isSelected = services.includes(svc.id);
+                const price = complexityPrices[svc.id] ?? 0;
+                return (
+                  <div key={svc.id} className={`p-2 rounded-lg border transition-all ${isSelected ? 'border-green-500 bg-green-500/10' : isDark ? 'border-slate-600' : 'border-gray-200'}`}>
+                    <div className="flex items-center gap-2">
+                      <input type="checkbox" checked={isSelected} onChange={() => toggleService(svc.id)} className="w-4 h-4 accent-green-600" />
+                      <span className={`text-sm flex-1 ${isSelected ? 'text-green-600 font-medium' : ''}`}>{svc.label}</span>
+                      {isSelected && (
+                        <div className="flex items-center gap-1">
+                          <span className="text-xs text-green-500">+R$</span>
+                          <input
+                            type="number"
+                            value={price}
+                            onChange={e => setComplexityPrices(p => ({ ...p, [svc.id]: +e.target.value }))}
+                            className={`w-16 text-xs font-bold text-right py-0.5 px-1 rounded ${input} border`}
+                          />
                         </div>
-                        {isSelected && (
-                          <div className="flex items-center gap-1.5">
-                            <span className={`text-xs ${isDark ? 'text-green-400' : 'text-green-600'}`}>+R$</span>
-                            <input
-                              type="number"
-                              value={price}
-                              onChange={e => setComplexityPrices(p => ({ ...p, [svc.id]: +e.target.value }))}
-                              className={`w-20 text-sm font-bold text-right py-1 px-2 rounded ${
-                                isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
-                              } border`}
-                            />
-                          </div>
-                        )}
-                      </div>
+                      )}
                     </div>
-                  );
-                })}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+        
+        {/* COLUNA 3: FECHAMENTO (4 cols) */}
+        <div className="lg:col-span-4 flex flex-col gap-3">
+          
+          {/* Card: Resumo Financeiro */}
+          <div className={`${card} border rounded-xl p-3`}>
+            <h2 className={`font-semibold text-sm mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>ðŸ’° Resumo Financeiro</h2>
+            
+            {/* SETUP Input */}
+            <div className={`p-3 rounded-xl mb-2 ${isDark ? 'bg-orange-500/20' : 'bg-orange-50 border border-orange-200'}`}>
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs uppercase font-bold text-orange-500">Setup (AdesÃ£o)</p>
+                {isAutoPrice && <span className="text-[8px] bg-blue-500 text-white px-1.5 py-0.5 rounded-full">AUTO</span>}
               </div>
-              
-              {/* Total de Serviços + Complexidade */}
-              {(editableServicesTotal > 0 || editableComplexityTotal > 0) && (
-                <div className={`mt-3 p-2 rounded-lg ${isDark ? 'bg-slate-700/50' : 'bg-gray-50'}`}>
-                  <div className="flex justify-between text-xs">
-                    <span className={isDark ? 'text-slate-400' : 'text-gray-500'}>Serviços:</span>
-                    <span className={`font-mono ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>{fmt(editableServicesTotal)}</span>
-                  </div>
-                  <div className="flex justify-between text-xs">
-                    <span className={isDark ? 'text-slate-400' : 'text-gray-500'}>Complexidade:</span>
-                    <span className={`font-mono ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>{fmt(editableComplexityTotal)}</span>
-                  </div>
-                  <div className={`flex justify-between text-sm font-bold mt-1 pt-1 border-t ${isDark ? 'border-slate-600' : 'border-gray-200'}`}>
-                    <span className={isDark ? 'text-slate-300' : 'text-gray-700'}>Total Serviços:</span>
-                    <span className="text-orange-500">{fmt(editableServicesTotal + editableComplexityTotal)}</span>
-                  </div>
+              <div className="flex items-center gap-2">
+                <span className="text-orange-500 text-sm">R$</span>
+                <input
+                  type="number"
+                  value={manualSetup ?? calcSetup}
+                  onChange={e => !isAutoPrice && setManualSetup(+e.target.value)}
+                  readOnly={isAutoPrice}
+                  className={`flex-1 text-xl font-bold ${input} border rounded-lg px-2 py-1 text-right ${isAutoPrice ? 'opacity-70' : ''}`}
+                />
+              </div>
+              {/* Breakdown */}
+              <div className={`mt-2 pt-2 border-t ${isDark ? 'border-orange-500/30' : 'border-orange-200'} space-y-0.5`}>
+                <div className="flex justify-between text-[10px]">
+                  <span className="text-orange-400">Base:</span>
+                  <span className="font-mono">{fmt(dynamicSetup)}</span>
                 </div>
-              )}
+                <div className="flex justify-between text-[10px]">
+                  <span className="text-orange-400">ServiÃ§os:</span>
+                  <span className="font-mono">{fmt(editableServicesTotal)}</span>
+                </div>
+                <div className="flex justify-between text-[10px]">
+                  <span className="text-orange-400">Complexidade:</span>
+                  <span className="font-mono">{fmt(editableComplexityTotal)}</span>
+                </div>
+                <div className="flex justify-between text-[10px]">
+                  <span className="text-orange-400">IntegraÃ§Ãµes:</span>
+                  <span className="font-mono">{fmt(integrationPrice)}</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* MONTHLY Input */}
+            <div className={`p-3 rounded-xl mb-2 ${isDark ? 'bg-blue-500/20' : 'bg-blue-50 border border-blue-200'}`}>
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs uppercase font-bold text-blue-500">Mensalidade</p>
+                {isAutoPrice && <span className="text-[8px] bg-blue-500 text-white px-1.5 py-0.5 rounded-full">AUTO</span>}
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-blue-500 text-sm">R$</span>
+                <input
+                  type="number"
+                  value={manualMonthly ?? finalMonthly}
+                  onChange={e => !isAutoPrice && setManualMonthly(+e.target.value)}
+                  readOnly={isAutoPrice}
+                  className={`flex-1 text-xl font-bold ${input} border rounded-lg px-2 py-1 text-right ${isAutoPrice ? 'opacity-70' : ''}`}
+                />
+                <span className="text-blue-500 text-sm">/mÃªs</span>
+              </div>
+            </div>
+            
+            {/* Toggle Auto/Manual */}
+            <PriceModeToggle isAuto={isAutoPrice} onToggle={() => { setIsAutoPrice(!isAutoPrice); if (!isAutoPrice) { setManualMonthly(null); setManualSetup(null); }}} isDark={isDark} />
+            
+            {/* Profit */}
+            <div className={`p-2 rounded-lg mt-2 ${isDark ? 'bg-green-500/20' : 'bg-green-50'}`}>
+              <p className="text-[9px] uppercase font-bold text-green-500">Seu Lucro Mensal</p>
+              <p className={`text-lg font-bold ${profit.yourProfit > 0 ? 'text-green-500' : 'text-red-500'}`}>{fmt(profit.yourProfit)}</p>
             </div>
           </div>
           
-          {/* Cumulative Profit Chart */}
+          {/* Chart: J-Curve */}
           <CumulativeProfitChart
             data={profitData}
             paybackMonth={paybackMonth}
             yearlyProfit={yearlyProfit}
             isDark={isDark}
           />
-        </div>
-        
-        {/* RIGHT COLUMN - 4 cols */}
-        <div className="lg:col-span-4 flex flex-col gap-3">
-          {/* Partnership */}
-          <div className={`p-3 rounded-xl ${isDark ? 'bg-slate-700' : 'bg-blue-50 border border-blue-200'}`}>
-            <p className={`text-[10px] font-bold uppercase mb-2 ${isDark ? 'text-slate-400' : 'text-blue-700'}`}>Modelo</p>
-            <div className="flex gap-2">
-              {(['whitelabel', 'partner'] as PartnershipModel[]).map(m => (
-                <button key={m} onClick={() => setPartnership(m)} className={`flex-1 py-2 px-3 rounded-lg text-xs font-medium ${partnership === m ? 'bg-blue-600 text-white' : isDark ? 'bg-slate-600 text-slate-300' : 'bg-white border border-gray-300 text-gray-600'}`}>
-                  {PARTNERSHIP_MODELS[m].label}
-                </button>
-              ))}
-            </div>
-          </div>
-          
-          {/* PRICING CARD COM DOIS INPUTS GRANDES */}
-          <div className={`${card} border rounded-xl p-3`}>
-            <h2 className={`font-semibold text-sm mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>Preço Final</h2>
-            
-            {/* Only show base cost for whitelabel */}
-            {partnership === 'whitelabel' && (
-              <div className={`p-2 rounded-lg mb-3 ${isDark ? 'bg-slate-700' : 'bg-gray-50'}`}>
-                <div className="flex justify-between text-sm mb-2">
-                  <span>Custo Base</span>
-                  <span className="font-mono">{fmt(baseCost)}</span>
-                </div>
-                <div className="flex justify-between items-center text-xs mb-1">
-                  <span>Margem</span>
-                  <span className="font-bold text-blue-500">{markup}%</span>
-                </div>
-                <input type="range" min="50" max="300" step="10" value={markup} onChange={e => { setMarkup(+e.target.value); setManualMonthly(null); }} className="w-full accent-blue-600" />
-              </div>
-            )}
-            
-            {/* SETUP INPUT (GRANDE) */}
-            <div className={`p-4 rounded-xl mb-3 ${isDark ? 'bg-orange-500/20' : 'bg-orange-50 border border-orange-200'} ${isAutoPrice ? 'opacity-80' : ''}`}>
-              <div className="flex items-center justify-between mb-2">
-                <Tooltip text={PRICE_TOOLTIPS.setup}>
-                  <p className="text-xs uppercase font-bold text-orange-500">Setup Total (Adesão)</p>
-                </Tooltip>
-                {isAutoPrice && (
-                  <span className="text-[8px] bg-blue-500 text-white px-2 py-0.5 rounded-full">AUTO</span>
-                )}
-              </div>
-              <div className="flex items-center gap-2 w-full overflow-hidden">
-                <span className="text-orange-500 text-base flex-shrink-0">R$</span>
-                <input
-                  type="number"
-                  value={manualSetup ?? calcSetup}
-                  onChange={e => !isAutoPrice && setManualSetup(+e.target.value)}
-                  readOnly={isAutoPrice}
-                  className={`flex-1 min-w-0 text-xl font-bold ${input} border rounded-lg px-2 py-1.5 text-right ${isAutoPrice ? 'cursor-not-allowed opacity-70' : ''}`}
-                />
-              </div>
-              {!isAutoPrice && manualSetup !== null && <p className="text-[9px] text-orange-400 mt-1">⚠️ Valor manual (automático: {fmt(calcSetup)})</p>}
-            </div>
-            
-            {/* MONTHLY INPUT (GRANDE) */}
-            <div className={`p-4 rounded-xl mb-3 ${isDark ? 'bg-blue-500/20' : 'bg-blue-50 border border-blue-200'} ${isAutoPrice ? 'opacity-80' : ''}`}>
-              <div className="flex items-center justify-between mb-2">
-                <Tooltip text={PRICE_TOOLTIPS.monthly}>
-                  <p className="text-xs uppercase font-bold text-blue-500">Mensalidade (Recorrente)</p>
-                </Tooltip>
-                {isAutoPrice && (
-                  <span className="text-[8px] bg-blue-500 text-white px-2 py-0.5 rounded-full">AUTO</span>
-                )}
-              </div>
-              <div className="flex items-center gap-2 w-full overflow-hidden">
-                <span className="text-blue-500 text-base flex-shrink-0">R$</span>
-                <input
-                  type="number"
-                  value={manualMonthly ?? finalMonthly}
-                  onChange={e => !isAutoPrice && setManualMonthly(+e.target.value)}
-                  readOnly={isAutoPrice}
-                  className={`flex-1 min-w-0 text-xl font-bold ${input} border rounded-lg px-2 py-1.5 text-right ${isAutoPrice ? 'cursor-not-allowed opacity-70' : ''}`}
-                />
-                <span className="text-blue-500 text-sm flex-shrink-0">/mês</span>
-              </div>
-              {!isAutoPrice && manualMonthly !== null && <p className="text-[9px] text-blue-400 mt-1">⚠️ Valor manual (automático: {fmt(flexibleMonthlyPrice)})</p>}
-            </div>
-            
-            {/* Profit Display */}
-            <div className={`p-3 rounded-xl ${partnership === 'partner' ? (isDark ? 'bg-green-500/20' : 'bg-green-50') : (isDark ? 'bg-slate-700' : 'bg-gray-50')}`}>
-              {partnership === 'whitelabel' ? (
-                <>
-                  <p className={`text-[9px] uppercase font-bold ${isDark ? 'text-slate-400' : 'text-gray-500'} mb-0.5`}>Seu Lucro Mensal</p>
-                  <p className={`text-lg font-bold ${profit.yourProfit > 0 ? 'text-green-500' : 'text-red-500'}`}>{fmt(profit.yourProfit)}</p>
-                </>
-              ) : (
-                <>
-                  <p className="text-[9px] uppercase font-bold text-green-500 mb-0.5">Sua Comissão (70%)</p>
-                  <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-green-700'}`}>{fmt(profit.yourProfit)}</p>
-                  <p className="text-[9px] text-slate-500">Taxa Bolten: {fmt(profit.boltenFee)}</p>
-                </>
-              )}
-            </div>
-          </div>
           
           {/* Generate Button */}
-          <button onClick={() => setShowPrint(true)} className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl flex items-center justify-center gap-2">
+          <button onClick={() => setShowPrint(true)} className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-lg">
             <span className="material-symbols-outlined">print</span>
-            Gerar PDF
+            Gerar Proposta PDF
           </button>
+        </div>
+        
         </div>
       </main>
     </div>
