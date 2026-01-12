@@ -181,6 +181,203 @@ export const PRICING_MODEL_TOOLTIPS = {
 } as const;
 
 // ========================================
+// ONBOARDING TIPS - Dicas de uso por seção
+// ========================================
+export const ONBOARDING_TIPS = {
+  config: {
+    title: "📋 Configuração do Cliente",
+    description: "Defina o perfil do cliente e selecione os recursos da plataforma. Cada toggle ativa/desativa um módulo e impacta automaticamente o preço final.",
+    tips: [
+      "Preencha os dados do cliente para gerar propostas personalizadas",
+      "CRM está sempre incluso - é a base do sistema",
+      "WhatsApp + IA trabalham juntos para automação de atendimento",
+      "Conversões adiciona tracking avançado de vendas"
+    ]
+  },
+  pricing: {
+    title: "💰 Modelo de Precificação",
+    description: "Escolha como cobrar do cliente. O sistema calcula automaticamente custos, margens e lucros em tempo real.",
+    tips: [
+      "Por Usuário: ideal para clientes que querem começar pequeno",
+      "Pacote Fixo: melhor custo-benefício para equipes definidas",
+      "Híbrido: base fixa + usuários adicionais",
+      "🔴 Valores em vermelho indicam prejuízo - ajuste o preço!"
+    ]
+  },
+  roi: {
+    title: "📈 Calculadora de ROI",
+    description: "Simule o retorno que o cliente terá com a ferramenta. Estes números ajudam a justificar o investimento na proposta.",
+    tips: [
+      "Ticket Médio: valor médio de cada venda do cliente",
+      "Leads/mês: quantas oportunidades entram no funil",
+      "Taxa de Conversão: % atual de leads que viram clientes",
+      "Melhoria: aumento esperado na conversão com a ferramenta"
+    ]
+  }
+} as const;
+
+// ========================================
+// COST BREAKDOWN - Labels para explicação visual
+// ========================================
+export const COST_BREAKDOWN = {
+  crm: { 
+    label: "Ferramentas CRM", 
+    description: "Funil de vendas, contatos, tarefas e produtos",
+    costPerUser: FINANCIAL_RULES.BASE_COST_PER_USER,
+    isPerUser: true
+  },
+  whatsapp: { 
+    label: "WhatsApp Business", 
+    description: "Integração com WhatsApp (incluso no CRM)",
+    costPerUser: FINANCIAL_RULES.WHATSAPP_COST,
+    isPerUser: true
+  },
+  ai: { 
+    label: "Agente de IA", 
+    description: "Atendimento automatizado 24/7",
+    costFixed: FINANCIAL_RULES.AI_AGENT_COST,
+    isPerUser: false,
+    note: "até 500 contatos/mês"
+  },
+  conversions: { 
+    label: "Conversões", 
+    description: "Rastreamento e automação do funil",
+    costFixed: FINANCIAL_RULES.CONVERSIONS_COST,
+    isPerUser: false
+  }
+} as const;
+
+// ========================================
+// FUNÇÃO: Gerar explicação detalhada do ROI
+// ========================================
+export interface ROIExplanation {
+  steps: { label: string; formula: string; value: string }[];
+  finalMessage: string;
+}
+
+export function generateROIExplanation(inputs: ROIInputs): ROIExplanation {
+  const ticket = inputs.ticketMedio || 0;
+  const leads = inputs.leadsPerMonth || 0;
+  const rate = inputs.conversionRate || 0;
+  const improvement = inputs.improvementPercent || 0;
+
+  const currentSales = leads * (rate / 100);
+  const currentRevenue = currentSales * ticket;
+  const newRate = rate * (1 + improvement / 100);
+  const newSales = leads * (newRate / 100);
+  const newRevenue = newSales * ticket;
+  const recovered = newRevenue - currentRevenue;
+
+  return {
+    steps: [
+      {
+        label: "Vendas atuais/mês",
+        formula: `${leads} leads × ${rate}% conversão`,
+        value: `${currentSales.toFixed(1)} vendas`
+      },
+      {
+        label: "Receita atual/mês",
+        formula: `${currentSales.toFixed(1)} vendas × ${formatCurrency(ticket)}`,
+        value: formatCurrency(currentRevenue)
+      },
+      {
+        label: `Nova taxa de conversão (+${improvement}%)`,
+        formula: `${rate}% × (1 + ${improvement}%)`,
+        value: `${newRate.toFixed(1)}%`
+      },
+      {
+        label: "Novas vendas/mês",
+        formula: `${leads} leads × ${newRate.toFixed(1)}%`,
+        value: `${newSales.toFixed(1)} vendas`
+      },
+      {
+        label: "Nova receita/mês",
+        formula: `${newSales.toFixed(1)} vendas × ${formatCurrency(ticket)}`,
+        value: formatCurrency(newRevenue)
+      },
+      {
+        label: "RECEITA RECUPERADA",
+        formula: `${formatCurrency(newRevenue)} - ${formatCurrency(currentRevenue)}`,
+        value: formatCurrency(recovered)
+      }
+    ],
+    finalMessage: recovered > 0 
+      ? `Com a melhoria de ${improvement}% na conversão, o cliente recupera ${formatCurrency(recovered)} a mais por mês.`
+      : "Ajuste os valores para ver a receita recuperada."
+  };
+}
+
+// ========================================
+// FUNÇÃO: Gerar breakdown detalhado de custos
+// ========================================
+export interface CostBreakdownItem {
+  label: string;
+  description: string;
+  quantity: number | null;
+  unitPrice: number;
+  total: number;
+  isPerUser: boolean;
+}
+
+export function generateCostBreakdown(
+  features: FeatureState, 
+  userCount: number
+): { items: CostBreakdownItem[]; total: number } {
+  const items: CostBreakdownItem[] = [];
+  let total = 0;
+
+  if (features.crm) {
+    const cost = FINANCIAL_RULES.BASE_COST_PER_USER * userCount;
+    items.push({
+      label: COST_BREAKDOWN.crm.label,
+      description: COST_BREAKDOWN.crm.description,
+      quantity: userCount,
+      unitPrice: FINANCIAL_RULES.BASE_COST_PER_USER,
+      total: cost,
+      isPerUser: true
+    });
+    total += cost;
+  }
+
+  if (features.whatsapp) {
+    items.push({
+      label: COST_BREAKDOWN.whatsapp.label,
+      description: COST_BREAKDOWN.whatsapp.description,
+      quantity: userCount,
+      unitPrice: 0,
+      total: 0,
+      isPerUser: true
+    });
+  }
+
+  if (features.ai) {
+    items.push({
+      label: COST_BREAKDOWN.ai.label,
+      description: COST_BREAKDOWN.ai.description + " (até 500 contatos/mês)",
+      quantity: null,
+      unitPrice: FINANCIAL_RULES.AI_AGENT_COST,
+      total: FINANCIAL_RULES.AI_AGENT_COST,
+      isPerUser: false
+    });
+    total += FINANCIAL_RULES.AI_AGENT_COST;
+  }
+
+  if (features.conversions) {
+    items.push({
+      label: COST_BREAKDOWN.conversions.label,
+      description: COST_BREAKDOWN.conversions.description,
+      quantity: null,
+      unitPrice: FINANCIAL_RULES.CONVERSIONS_COST,
+      total: FINANCIAL_RULES.CONVERSIONS_COST,
+      isPerUser: false
+    });
+    total += FINANCIAL_RULES.CONVERSIONS_COST;
+  }
+
+  return { items, total };
+}
+
+// ========================================
 // INTERNAL PRICING (Retrocompatibilidade)
 // ========================================
 export const INTERNAL_PRICING = {

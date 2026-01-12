@@ -5,10 +5,12 @@ import {
   PARTNERSHIP_MODELS, FEATURE_TOOLTIPS, ROI_TOOLTIPS, PRICE_TOOLTIPS,
   calculateDynamicSetup, calculateInternalCost, calculateServicesTotal, calculateComplexityPercent,
   calculateFinalPrice, calculateROI, calculateProfit, calculateCumulativeProfit, findPaybackMonth, calculateYearlyProfit,
-  // Novas importações para sistema flexível
+  // Sistema flexível
   PricingModel, PRICING_MODELS, USER_PRICE_RANGES, FIXED_TIERS, HYBRID_PRICING, FINANCIAL_RULES,
   getUserPriceRange, calculateFlexibleMonthlyPrice, calculateInternalCostFlexible, 
   calculateProfitFlexible, validateMinimumPrice, getSuggestedPrice, PRICING_MODEL_TOOLTIPS,
+  // Onboarding e Explicações
+  ONBOARDING_TIPS, generateROIExplanation, generateCostBreakdown,
 } from './types';
 
 // ========================================
@@ -40,6 +42,80 @@ const Tooltip: React.FC<{ text: string; children: React.ReactNode }> = ({ text, 
   );
 };
 
+// ========================================
+// ONBOARDING TIP COMPONENT
+// ========================================
+interface OnboardingTipProps {
+  tipKey: 'config' | 'pricing' | 'roi';
+  isVisible: boolean;
+  onToggle: () => void;
+  isDark: boolean;
+}
+
+const OnboardingTip: React.FC<OnboardingTipProps> = ({ tipKey, isVisible, onToggle, isDark }) => {
+  const tip = ONBOARDING_TIPS[tipKey];
+  
+  return (
+    <div className={`rounded-xl border transition-all ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-blue-50/50 border-blue-100'}`}>
+      <button
+        onClick={onToggle}
+        className={`w-full px-3 py-2 flex items-center justify-between text-left ${isDark ? 'text-slate-300' : 'text-blue-700'}`}
+      >
+        <span className="font-semibold text-sm">{tip.title}</span>
+        <span className="material-symbols-outlined text-sm transition-transform" style={{ transform: isVisible ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+          expand_more
+        </span>
+      </button>
+      {isVisible && (
+        <div className="px-3 pb-3 animate-fadeIn">
+          <p className={`text-xs mb-2 ${isDark ? 'text-slate-400' : 'text-blue-600'}`}>{tip.description}</p>
+          <ul className="space-y-1">
+            {tip.tips.map((t, i) => (
+              <li key={i} className={`text-[10px] flex items-start gap-1.5 ${isDark ? 'text-slate-500' : 'text-blue-500'}`}>
+                <span className="text-blue-400">•</span>
+                {t}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ========================================
+// PRICE MODE TOGGLE (Auto/Manual)
+// ========================================
+interface PriceModeToggleProps {
+  isAuto: boolean;
+  onToggle: () => void;
+  isDark: boolean;
+}
+
+const PriceModeToggle: React.FC<PriceModeToggleProps> = ({ isAuto, onToggle, isDark }) => (
+  <div className={`flex items-center justify-between p-3 rounded-lg ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}>
+    <div>
+      <p className={`text-xs font-bold ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+        Modo de Precificação
+      </p>
+      <p className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
+        {isAuto ? 'Preços calculados automaticamente' : 'Você define os valores manualmente'}
+      </p>
+    </div>
+    <button
+      onClick={onToggle}
+      className={`relative w-16 h-8 rounded-full transition-colors ${isAuto ? 'bg-blue-600' : 'bg-orange-500'}`}
+    >
+      <span
+        className={`absolute top-1 w-6 h-6 bg-white rounded-full shadow transition-all flex items-center justify-center ${isAuto ? 'left-1' : 'right-1'}`}
+      >
+        <span className="material-symbols-outlined text-xs" style={{ color: isAuto ? '#2563eb' : '#f97316' }}>
+          {isAuto ? 'auto_fix_high' : 'edit'}
+        </span>
+      </span>
+    </button>
+  </div>
+);
 // ========================================
 // RICH SERVICE LIST ITEM
 // ========================================
@@ -693,6 +769,13 @@ export default function App() {
   const [userCount, setUserCount] = useState(1);  // Usuários individuais
   const [selectedFixedTier, setSelectedFixedTier] = useState<string>('tier_5');
   
+  // MODO AUTOMÁTICO VS MANUAL
+  const [isAutoPrice, setIsAutoPrice] = useState(true);  // true = automático, false = manual
+  
+  // UI STATES
+  const [showOnboardingTips, setShowOnboardingTips] = useState(true);
+  const [showROIExplanation, setShowROIExplanation] = useState(false);
+  
   // INPUTS EDITÁVEIS SEPARADOS
   const [manualSetup, setManualSetup] = useState<number | null>(null);
   const [manualMonthly, setManualMonthly] = useState<number | null>(null);
@@ -761,6 +844,15 @@ export default function App() {
   );
   const paybackMonth = useMemo(() => findPaybackMonth(profitData), [profitData]);
   const yearlyProfit = useMemo(() => calculateYearlyProfit(profitData), [profitData]);
+  
+  // EXPLICAÇÃO DETALHADA DO ROI
+  const roiExplanation = useMemo(() => generateROIExplanation(roi), [roi]);
+  
+  // BREAKDOWN DE CUSTOS
+  const costBreakdown = useMemo(() => 
+    generateCostBreakdown(features, effectiveUserCount),
+    [features, effectiveUserCount]
+  );
   
   // HANDLERS
   const selectPlan = useCallback((p: PlanLevel) => {
@@ -846,6 +938,13 @@ export default function App() {
             ))}
           </div>
           
+          {/* Onboarding Tip */}
+          <OnboardingTip 
+            tipKey={activeTab} 
+            isVisible={showOnboardingTips} 
+            onToggle={() => setShowOnboardingTips(!showOnboardingTips)}
+            isDark={isDark}
+          />
           {activeTab === 'config' ? (
             <>
               {/* Client */}
@@ -886,7 +985,21 @@ export default function App() {
                 <h2 className={`font-semibold text-sm mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                   Modelo de Precificação
                 </h2>
-                <div className="space-y-2">
+                
+                {/* Toggle Auto/Manual */}
+                <PriceModeToggle
+                  isAuto={isAutoPrice}
+                  onToggle={() => {
+                    setIsAutoPrice(!isAutoPrice);
+                    if (!isAutoPrice) {
+                      setManualMonthly(null);
+                      setManualSetup(null);
+                    }
+                  }}
+                  isDark={isDark}
+                />
+                
+                <div className="space-y-2 mt-3">
                   {(Object.keys(PRICING_MODELS) as PricingModel[]).map(model => {
                     const m = PRICING_MODELS[model];
                     return (
@@ -1020,6 +1133,67 @@ export default function App() {
                 )}
               </div>
 
+              {/* Breakdown de Custos */}
+              <div className={`${card} border rounded-xl p-3`}>
+                <h2 className={`font-semibold text-sm mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                  Composição do Custo
+                </h2>
+                <div className="space-y-2">
+                  {costBreakdown.items.map((item, i) => (
+                    <div 
+                      key={i} 
+                      className={`p-2 rounded-lg flex justify-between items-center ${
+                        item.total > 0 
+                          ? (isDark ? 'bg-slate-700/50' : 'bg-gray-50')
+                          : (isDark ? 'bg-slate-800/30' : 'bg-gray-50/50')
+                      }`}
+                    >
+                      <div className="flex-1">
+                        <p className={`text-xs font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                          {item.label}
+                        </p>
+                        <p className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
+                          {item.isPerUser && item.quantity 
+                            ? `${fmt(item.unitPrice)}/usuário × ${item.quantity}` 
+                            : item.description}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className={`text-sm font-bold font-mono ${
+                          item.total > 0 
+                            ? (isDark ? 'text-white' : 'text-gray-900')
+                            : 'text-green-500'
+                        }`}>
+                          {item.total === 0 ? 'Incluso' : fmt(item.total)}
+                        </p>
+                        {item.isPerUser && item.total > 0 && (
+                          <p className={`text-[9px] ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                            /mês
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {/* Total de Custo */}
+                  <div className={`p-2 rounded-lg ${isDark ? 'bg-orange-500/20' : 'bg-orange-50'} border-2 border-dashed ${isDark ? 'border-orange-500/30' : 'border-orange-200'}`}>
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className={`text-xs font-bold ${isDark ? 'text-orange-400' : 'text-orange-700'}`}>
+                          Seu Custo Total
+                        </p>
+                        <p className={`text-[10px] ${isDark ? 'text-orange-500/70' : 'text-orange-600'}`}>
+                          Custo mínimo: {fmt(FINANCIAL_RULES.MIN_MONTHLY_COST)}
+                        </p>
+                      </div>
+                      <p className={`text-lg font-bold font-mono ${isDark ? 'text-orange-400' : 'text-orange-700'}`}>
+                        {fmt(costBreakdown.total)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Resumo do Preço */}
               <div className={`${card} border rounded-xl p-3`}>
                 <h2 className={`font-semibold text-sm mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Resumo</h2>
@@ -1091,9 +1265,70 @@ export default function App() {
                   <input type="range" min={5} max={50} step={5} value={roi.improvementPercent} onChange={e => setRoi(r => ({...r, improvementPercent: +e.target.value}))} className="w-full accent-blue-600" />
                 </div>
               </div>
-              <div className={`p-3 rounded-lg mt-2 ${isDark ? 'bg-green-500/20' : 'bg-green-50'}`}>
-                <p className="text-[9px] uppercase font-bold text-green-500 mb-0.5">Receita Recuperada</p>
-                <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-green-700'}`}>+{fmt(roiCalc.recoveredRevenue)}/mês</p>
+              
+              {/* Receita Recuperada com Explicação Detalhada */}
+              <div className={`rounded-lg mt-2 overflow-hidden ${isDark ? 'bg-green-500/20' : 'bg-green-50'}`}>
+                <div className="p-3">
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-[9px] uppercase font-bold text-green-500">Receita Recuperada</p>
+                    <button
+                      onClick={() => setShowROIExplanation(!showROIExplanation)}
+                      className="text-[10px] text-green-600 hover:underline flex items-center gap-0.5"
+                    >
+                      <span className="material-symbols-outlined text-xs">
+                        {showROIExplanation ? 'visibility_off' : 'calculate'}
+                      </span>
+                      {showROIExplanation ? 'Ocultar' : 'Ver cálculo'}
+                    </button>
+                  </div>
+                  <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-green-700'}`}>+{fmt(roiCalc.recoveredRevenue)}/mês</p>
+                </div>
+                
+                {/* Explicação Detalhada */}
+                {showROIExplanation && (
+                  <div className={`px-3 pb-3 space-y-2 animate-fadeIn ${isDark ? 'bg-slate-800/50' : 'bg-green-100/50'}`}>
+                    <p className={`text-[10px] font-bold ${isDark ? 'text-slate-300' : 'text-green-800'}`}>
+                      📊 Explicação do Cálculo:
+                    </p>
+                    <div className="space-y-1.5">
+                      {roiExplanation.steps.map((step, i) => (
+                        <div 
+                          key={i} 
+                          className={`p-2 rounded ${
+                            i === roiExplanation.steps.length - 1 
+                              ? (isDark ? 'bg-green-600/30' : 'bg-green-200') 
+                              : (isDark ? 'bg-slate-700/50' : 'bg-white/70')
+                          }`}
+                        >
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className={`text-[10px] font-bold ${
+                                i === roiExplanation.steps.length - 1 
+                                  ? 'text-green-500' 
+                                  : (isDark ? 'text-slate-300' : 'text-gray-700')
+                              }`}>
+                                {step.label}
+                              </p>
+                              <p className={`text-[9px] font-mono ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
+                                {step.formula}
+                              </p>
+                            </div>
+                            <p className={`text-sm font-bold ${
+                              i === roiExplanation.steps.length - 1 
+                                ? 'text-green-500' 
+                                : (isDark ? 'text-white' : 'text-gray-900')
+                            }`}>
+                              {step.value}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <p className={`text-[10px] ${isDark ? 'text-green-400' : 'text-green-700'} italic`}>
+                      💡 {roiExplanation.finalMessage}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -1204,38 +1439,50 @@ export default function App() {
             )}
             
             {/* SETUP INPUT (GRANDE) */}
-            <div className={`p-4 rounded-xl mb-3 ${isDark ? 'bg-orange-500/20' : 'bg-orange-50 border border-orange-200'}`}>
-              <Tooltip text={PRICE_TOOLTIPS.setup}>
-                <p className="text-xs uppercase font-bold text-orange-500 mb-2">Setup Total (Adesão)</p>
-              </Tooltip>
+            <div className={`p-4 rounded-xl mb-3 ${isDark ? 'bg-orange-500/20' : 'bg-orange-50 border border-orange-200'} ${isAutoPrice ? 'opacity-80' : ''}`}>
+              <div className="flex items-center justify-between mb-2">
+                <Tooltip text={PRICE_TOOLTIPS.setup}>
+                  <p className="text-xs uppercase font-bold text-orange-500">Setup Total (Adesão)</p>
+                </Tooltip>
+                {isAutoPrice && (
+                  <span className="text-[8px] bg-blue-500 text-white px-2 py-0.5 rounded-full">AUTO</span>
+                )}
+              </div>
               <div className="flex items-center gap-2 w-full overflow-hidden">
                 <span className="text-orange-500 text-base flex-shrink-0">R$</span>
                 <input
                   type="number"
                   value={manualSetup ?? calcSetup}
-                  onChange={e => setManualSetup(+e.target.value)}
-                  className={`flex-1 min-w-0 text-xl font-bold ${input} border rounded-lg px-2 py-1.5 text-right`}
+                  onChange={e => !isAutoPrice && setManualSetup(+e.target.value)}
+                  readOnly={isAutoPrice}
+                  className={`flex-1 min-w-0 text-xl font-bold ${input} border rounded-lg px-2 py-1.5 text-right ${isAutoPrice ? 'cursor-not-allowed opacity-70' : ''}`}
                 />
               </div>
-              {manualSetup !== null && <p className="text-[9px] text-orange-400 mt-1">⚠️ Valor manual (automático: {fmt(calcSetup)})</p>}
+              {!isAutoPrice && manualSetup !== null && <p className="text-[9px] text-orange-400 mt-1">⚠️ Valor manual (automático: {fmt(calcSetup)})</p>}
             </div>
             
             {/* MONTHLY INPUT (GRANDE) */}
-            <div className={`p-4 rounded-xl mb-3 ${isDark ? 'bg-blue-500/20' : 'bg-blue-50 border border-blue-200'}`}>
-              <Tooltip text={PRICE_TOOLTIPS.monthly}>
-                <p className="text-xs uppercase font-bold text-blue-500 mb-2">Mensalidade (Recorrente)</p>
-              </Tooltip>
+            <div className={`p-4 rounded-xl mb-3 ${isDark ? 'bg-blue-500/20' : 'bg-blue-50 border border-blue-200'} ${isAutoPrice ? 'opacity-80' : ''}`}>
+              <div className="flex items-center justify-between mb-2">
+                <Tooltip text={PRICE_TOOLTIPS.monthly}>
+                  <p className="text-xs uppercase font-bold text-blue-500">Mensalidade (Recorrente)</p>
+                </Tooltip>
+                {isAutoPrice && (
+                  <span className="text-[8px] bg-blue-500 text-white px-2 py-0.5 rounded-full">AUTO</span>
+                )}
+              </div>
               <div className="flex items-center gap-2 w-full overflow-hidden">
                 <span className="text-blue-500 text-base flex-shrink-0">R$</span>
                 <input
                   type="number"
-                  value={manualMonthly ?? calcMonthly}
-                  onChange={e => setManualMonthly(+e.target.value)}
-                  className={`flex-1 min-w-0 text-xl font-bold ${input} border rounded-lg px-2 py-1.5 text-right`}
+                  value={manualMonthly ?? finalMonthly}
+                  onChange={e => !isAutoPrice && setManualMonthly(+e.target.value)}
+                  readOnly={isAutoPrice}
+                  className={`flex-1 min-w-0 text-xl font-bold ${input} border rounded-lg px-2 py-1.5 text-right ${isAutoPrice ? 'cursor-not-allowed opacity-70' : ''}`}
                 />
                 <span className="text-blue-500 text-sm flex-shrink-0">/mês</span>
               </div>
-              {manualMonthly !== null && <p className="text-[9px] text-blue-400 mt-1">⚠️ Valor manual (automático: {fmt(calcMonthly)})</p>}
+              {!isAutoPrice && manualMonthly !== null && <p className="text-[9px] text-blue-400 mt-1">⚠️ Valor manual (automático: {fmt(flexibleMonthlyPrice)})</p>}
             </div>
             
             {/* Profit Display */}
