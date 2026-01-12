@@ -11,7 +11,10 @@ import {
   calculateProfitFlexible, validateMinimumPrice, getSuggestedPrice, PRICING_MODEL_TOOLTIPS,
   // Onboarding e Explicações
   ONBOARDING_TIPS, generateROIExplanation, generateCostBreakdown,
+  // Sales Wizard
+  CalculatorPreset,
 } from './types';
+import SalesWizard from './SalesWizard';
 
 // ========================================
 // UTILITIES
@@ -754,6 +757,7 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
 export default function App() {
   const [theme, setTheme] = useState<ThemeMode>('light');
   const [showPrint, setShowPrint] = useState(false);
+  const [showWizard, setShowWizard] = useState(false); // Sales Wizard
   const [activeTab, setActiveTab] = useState<'config' | 'roi' | 'pricing'>('config');
   
   const [client, setClient] = useState<ClientData>({ companyName: '', contactName: '', email: '' });
@@ -880,11 +884,45 @@ export default function App() {
     setManualMonthly(null);
   }, []);
   
+  // WIZARD PRESET HANDLER
+  const applyWizardPreset = useCallback((preset: CalculatorPreset) => {
+    // Aplicar todas as configurações do wizard
+    setUserCount(preset.userCount);
+    setPricingModel(preset.pricingModel);
+    setPlan(preset.plan);
+    setFeatures(preset.features);
+    setServices(preset.services);
+    setMarkup(preset.markup);
+    
+    // Atualizar tier baseado no plano
+    const tierForPlan = USER_TIERS.find(t => t.linkedPlan === preset.plan);
+    if (tierForPlan) setTier(tierForPlan);
+    
+    // Limpar valores manuais
+    setManualSetup(null);
+    setManualMonthly(null);
+    setIsAutoPrice(true);
+    
+    // Fechar wizard
+    setShowWizard(false);
+  }, []);
+  
   const isDark = theme === 'dark';
   const bg = isDark ? 'bg-slate-900' : 'bg-gray-50';
   const text = isDark ? 'text-slate-300' : 'text-gray-700';
   const card = isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200';
   const input = isDark ? 'bg-slate-900 border-slate-600 text-white' : 'bg-white border-gray-300 text-gray-900';
+  
+  // WIZARD MODE
+  if (showWizard) {
+    return (
+      <SalesWizard 
+        onComplete={applyWizardPreset}
+        onCancel={() => setShowWizard(false)}
+        isDark={isDark}
+      />
+    );
+  }
   
   // PRINT MODE
   if (showPrint) {
@@ -921,9 +959,18 @@ export default function App() {
           </div>
           <span className={`font-bold text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>{SYSTEM_CONFIG.name}</span>
         </div>
-        <button onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')} className={`p-2 rounded-lg ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}>
-          <span className="material-symbols-outlined text-sm">{isDark ? 'light_mode' : 'dark_mode'}</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={() => setShowWizard(true)} 
+            className="px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 hover:from-blue-600 hover:to-blue-800 transition-all shadow-sm"
+          >
+            <span className="material-symbols-outlined text-sm">auto_fix_high</span>
+            Novo Diagnóstico
+          </button>
+          <button onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')} className={`p-2 rounded-lg ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}>
+            <span className="material-symbols-outlined text-sm">{isDark ? 'light_mode' : 'dark_mode'}</span>
+          </button>
+        </div>
       </nav>
       
       <main className="max-w-7xl mx-auto p-4 grid lg:grid-cols-12 gap-4">

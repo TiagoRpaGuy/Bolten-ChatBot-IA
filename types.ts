@@ -691,3 +691,204 @@ export function calculateYearlyProfit(points: PaybackPoint[]): number {
   if (!points || points.length === 0) return 0;
   return points[points.length - 1]?.balance || 0;
 }
+
+// ========================================
+// SALES WIZARD - TYPES & CONSTANTS
+// ========================================
+
+export type IntegrationLevel = 'basic' | 'intermediate' | 'advanced';
+
+export interface WizardAnswers {
+  // Etapa 1: Dimensionamento
+  teamSize: number;
+  wantsAI: boolean;
+  
+  // Etapa 2: Escopo Técnico
+  integrationLevel: IntegrationLevel;
+  wantsConversions: boolean;
+  
+  // Etapa 3: Serviços
+  servicesMigration: boolean;
+  servicesTraining: boolean;
+  servicesOnboarding: boolean;
+  
+  // Etapa 4: Fatores de Risco
+  hasUrgency: boolean;
+  hasMeetings: boolean;
+  hasPremiumSupport: boolean;
+}
+
+export const WIZARD_INITIAL_STATE: WizardAnswers = {
+  teamSize: 1,
+  wantsAI: true,
+  integrationLevel: 'basic',
+  wantsConversions: false,
+  servicesMigration: false,
+  servicesTraining: false,
+  servicesOnboarding: true,
+  hasUrgency: false,
+  hasMeetings: false,
+  hasPremiumSupport: false,
+};
+
+export interface WizardStep {
+  id: number;
+  title: string;
+  subtitle: string;
+  icon: string;
+}
+
+export const WIZARD_STEPS: WizardStep[] = [
+  { id: 1, title: 'Dimensionamento', subtitle: 'Tamanho da equipe e recursos', icon: 'groups' },
+  { id: 2, title: 'Escopo Técnico', subtitle: 'Integrações e conversões', icon: 'integration_instructions' },
+  { id: 3, title: 'Serviços', subtitle: 'Setup e implementação', icon: 'home_repair_service' },
+  { id: 4, title: 'Contrato', subtitle: 'Fatores de risco', icon: 'description' },
+];
+
+export const WIZARD_QUESTIONS = {
+  step1: {
+    teamSize: {
+      question: 'Qual o tamanho da equipe de atendimento humano?',
+      hint: 'Número de pessoas que usarão o sistema diariamente.',
+    },
+    wantsAI: {
+      question: 'O cliente quer atendimento automático com Inteligência Artificial?',
+      hint: 'Agente de IA 24/7 para qualificar leads e responder automaticamente.',
+      optionYes: 'Sim, quer IA',
+      optionNo: 'Não, só humanos',
+    },
+  },
+  step2: {
+    integrationLevel: {
+      question: 'Nível de Complexidade de Integração:',
+      options: [
+        { value: 'basic', label: 'Básico', description: 'Só Bolten Nativo (sem integrações externas)', icon: 'check_circle' },
+        { value: 'intermediate', label: 'Intermediário', description: 'Webhooks Simples / Zapier / Make', icon: 'settings_suggest' },
+        { value: 'advanced', label: 'Avançado', description: 'Banco de Dados / ERP / API Custom', icon: 'code' },
+      ],
+    },
+    wantsConversions: {
+      question: 'Precisa rastrear conversões (Meta/Google Ads)?',
+      hint: 'Tracking avançado para atribuição de campanhas.',
+    },
+  },
+  step3: {
+    services: {
+      question: 'Quais serviços operacionais serão entregues?',
+      hint: 'Selecione todos que se aplicam.',
+      options: [
+        { id: 'migration', label: 'Migração de Dados', description: 'Importar contatos e histórico antigos', icon: 'cloud_upload' },
+        { id: 'training', label: 'Treinamento da Equipe', description: 'Sessão de 2h ao vivo + gravação', icon: 'school' },
+        { id: 'onboarding', label: 'Onboarding Assistido', description: 'Setup técnico acompanhado', icon: 'support_agent' },
+      ],
+    },
+  },
+  step4: {
+    riskFactors: {
+      question: 'Fatores de Risco ou Exigências:',
+      hint: 'Estes fatores impactam o preço final.',
+      options: [
+        { id: 'urgency', label: 'Urgência na Entrega', description: 'Entrega em até 48h (+15%)', icon: 'bolt', percent: 15 },
+        { id: 'meetings', label: 'Reuniões Presenciais', description: 'Atendimento in-loco (+10%)', icon: 'handshake', percent: 10 },
+        { id: 'support', label: 'Suporte Premium/VIP', description: 'SLA de 2h (+20%)', icon: 'verified_user', percent: 20 },
+      ],
+    },
+  },
+} as const;
+
+// ========================================
+// WIZARD -> CALCULATOR MAPPING
+// ========================================
+
+export interface CalculatorPreset {
+  userCount: number;
+  pricingModel: PricingModel;
+  plan: PlanLevel;
+  features: FeatureState;
+  services: string[];
+  markup: number;
+}
+
+/**
+ * Converte as respostas do Wizard em configurações para a Calculadora
+ */
+export function mapWizardToCalculator(answers: WizardAnswers): CalculatorPreset {
+  // Determinar plano baseado no tamanho da equipe
+  let plan: PlanLevel = 'start';
+  if (answers.teamSize >= 20) {
+    plan = 'enterprise';
+  } else if (answers.teamSize >= 5) {
+    plan = 'pro';
+  }
+  
+  // Definir features
+  const features: FeatureState = {
+    crm: true, // Sempre ativo
+    whatsapp: true, // Sempre ativo
+    ai: answers.wantsAI,
+    conversions: answers.wantsConversions,
+  };
+  
+  // Montar lista de serviços
+  const services: string[] = [];
+  if (answers.servicesOnboarding) services.push('onboarding');
+  if (answers.servicesTraining) services.push('training');
+  if (answers.servicesMigration) services.push('migration');
+  
+  // Calcular fatores de complexidade
+  if (answers.hasUrgency) services.push('urgencia');
+  if (answers.hasMeetings) services.push('presencial');
+  if (answers.hasPremiumSupport) services.push('suporte');
+  
+  // Determinar modelo de precificação
+  let pricingModel: PricingModel = 'per_user';
+  if (answers.teamSize >= 5) {
+    pricingModel = 'fixed_tier';
+  }
+  
+  // Calcular markup baseado na complexidade de integração
+  let markup = 100;
+  if (answers.integrationLevel === 'intermediate') {
+    markup = 120;
+  } else if (answers.integrationLevel === 'advanced') {
+    markup = 150;
+  }
+  
+  return {
+    userCount: answers.teamSize,
+    pricingModel,
+    plan,
+    features,
+    services,
+    markup,
+  };
+}
+
+/**
+ * Textos para o resumo do wizard
+ */
+export function getWizardSummary(answers: WizardAnswers): string[] {
+  const summary: string[] = [];
+  
+  summary.push(`👥 Equipe: ${answers.teamSize} usuário${answers.teamSize > 1 ? 's' : ''}`);
+  summary.push(`🤖 IA: ${answers.wantsAI ? 'Ativada' : 'Desativada'}`);
+  
+  const integrationLabels = { basic: 'Básico', intermediate: 'Intermediário', advanced: 'Avançado' };
+  summary.push(`🔌 Integração: ${integrationLabels[answers.integrationLevel]}`);
+  
+  if (answers.wantsConversions) summary.push('📊 Conversões: Ativado');
+  
+  const services: string[] = [];
+  if (answers.servicesOnboarding) services.push('Onboarding');
+  if (answers.servicesTraining) services.push('Treinamento');
+  if (answers.servicesMigration) services.push('Migração');
+  if (services.length > 0) summary.push(`🛠️ Serviços: ${services.join(', ')}`);
+  
+  const factors: string[] = [];
+  if (answers.hasUrgency) factors.push('Urgência');
+  if (answers.hasMeetings) factors.push('Presencial');
+  if (answers.hasPremiumSupport) factors.push('VIP');
+  if (factors.length > 0) summary.push(`⚡ Fatores: ${factors.join(', ')}`);
+  
+  return summary;
+}
