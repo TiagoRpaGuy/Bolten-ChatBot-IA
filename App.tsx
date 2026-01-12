@@ -558,7 +558,7 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
             <svg className="w-6 h-6" viewBox="0 0 512 512" fill="currentColor">
               <path d="M242.4 292.5C247.8 287.1 257.1 287.1 262.5 292.5L339.5 369.5C353.7 383.7 372.6 391.5 392.6 391.5H407.7L310.6 488.6C280.3 518.1 231.1 518.1 200.8 488.6L103.3 391.2H112.6C132.6 391.2 151.5 383.4 165.7 369.2L242.4 292.5zM262.5 218.9C257.1 224.4 247.9 224.5 242.4 218.9L165.7 142.2C151.5 128 132.6 120.2 112.6 120.2H103.3L200.7 22.76C231.1-7.586 280.3-7.586 310.6 22.76L407.8 119.9H392.6C372.6 119.9 353.7 127.7 339.5 141.9L262.5 218.9zM112.6 142.7C126.4 142.7 139.1 148.3 149.7 158.1L226.4 234.8C233.6 241.1 243 245.6 252.5 245.6C ## 245.6 271.2 241.1 278.4 234.8L201.8 311.4C## 349.2 139.1 368.2 126.4 368.2 112.6V112.6C368.2 112.6 368.2 112.6 368.2 112.6L464 112.6C476.7 112.6 489.1 117.8 498.2 127C507.4 136.1 512.6 148.5 512.6 161.3V161.3C512.6 174 507.4 186.5 498.2 195.6L399.1 294.8C399.1 294.8 399.1 294.8 399.1 294.8L399.1 294.8V294.8C386.4 294.8 374 289.6 364.8 280.4L288.2 203.8C278.1 194.6 265.7 189.4 252.5 189.4c-13.2 0-25.6 5.1-34.8 14.4L141 280.4C131.8 289.6 119.4 294.8 106.7 294.8v0l0 0H48C21.5 294.8 0 273.3 0 246.8v-85.6C0 134.7 21.5 113.2 48 113.2l64.6 0V142.7H112.6z"/>
             </svg>
-            Contratar Agora - {fmt(setupTotal + monthlyPrice)}
+            Contratar Agora - {fmt(setupTotal)}
           </button>
           <p className="text-green-200 text-[10px] mt-3">
             Pagamento instantâneo via PIX • Confirmação imediata
@@ -585,8 +585,8 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
                 {/* Valor */}
                 <div className="text-center mb-6">
                   <p className="text-gray-500 text-sm">Valor total a pagar</p>
-                  <p className="text-3xl font-bold text-gray-900">{fmt(setupTotal + monthlyPrice)}</p>
-                  <p className="text-xs text-gray-400 mt-1">Taxa de adesão + 1ª mensalidade</p>
+                  <p className="text-3xl font-bold text-gray-900">{fmt(setupTotal)}</p>
+                  <p className="text-xs text-gray-400 mt-1">Taxa de adesão (Setup inicial)</p>
                 </div>
                 
                 {/* Chave PIX */}
@@ -641,7 +641,7 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="w-4 h-4 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-bold">4</span>
-                      Digite o valor <strong className="text-gray-700">{fmt(setupTotal + monthlyPrice)}</strong> e confirme
+                      Digite o valor <strong className="text-gray-700">{fmt(setupTotal)}</strong> e confirme
                     </li>
                   </ol>
                 </div>
