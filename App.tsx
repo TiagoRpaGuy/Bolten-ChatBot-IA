@@ -227,11 +227,35 @@ const FEATURE_PRICES = {
   conversions: { name: 'Gestão de Conversões', description: 'Tracking avançado e attribution de vendas', monthly: 20, perUser: null },
 };
 
+// Chave PIX configurada
+const PIX_KEY = '45358113000100';
+const PIX_KEY_FORMATTED = '45.358.113/0001-00'; // CNPJ formatado para exibição
+
 const A4Proposal: React.FC<A4ProposalProps> = ({
   client, plan, tier, features, selectedServices, setupTotal, monthlyPrice, 
   roiRecovered, paybackData, paybackMonth, yearlyProfit, baseCost, onClose
 }) => {
   const handlePrint = () => window.print();
+  const [showPixModal, setShowPixModal] = useState(false);
+  const [pixCopied, setPixCopied] = useState(false);
+  
+  const handleCopyPix = async () => {
+    try {
+      await navigator.clipboard.writeText(PIX_KEY);
+      setPixCopied(true);
+      setTimeout(() => setPixCopied(false), 3000);
+    } catch (err) {
+      // Fallback para navegadores mais antigos
+      const textArea = document.createElement('textarea');
+      textArea.value = PIX_KEY;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setPixCopied(true);
+      setTimeout(() => setPixCopied(false), 3000);
+    }
+  };
   
   // Calcular investimento total no primeiro ano
   const yearlyInvestment = setupTotal + (monthlyPrice * 12);
@@ -520,38 +544,119 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
           </ol>
         </div>
         
-        {/* CTA - STRIPE CHECKOUT */}
+        {/* CTA - PAGAMENTO PIX */}
         <div className="mt-6 bg-gradient-to-r from-green-500 to-emerald-600 p-6 rounded-xl text-center no-print-button print-no-break">
           <h3 className="text-white text-lg font-bold mb-2">Pronto para começar?</h3>
           <p className="text-green-100 text-sm mb-4">
-            Clique abaixo para finalizar a contratação de forma segura via Stripe.
+            Clique abaixo para realizar o pagamento via PIX.
           </p>
           <button
-            onClick={() => {
-              // Stripe Checkout - Redirect
-              const stripeCheckoutUrl = import.meta.env.VITE_STRIPE_CHECKOUT_URL;
-              if (stripeCheckoutUrl) {
-                // Adiciona parâmetros de valor como query params
-                const params = new URLSearchParams({
-                  client_reference_id: client.companyName || 'cliente',
-                  prefilled_email: client.email || '',
-                });
-                window.open(`${stripeCheckoutUrl}?${params.toString()}`, '_blank');
-              } else {
-                alert('⚠️ Configure VITE_STRIPE_CHECKOUT_URL no arquivo .env.local para habilitar o checkout.\n\nExemplo:\nVITE_STRIPE_CHECKOUT_URL=https://buy.stripe.com/seu_link_aqui');
-              }
-            }}
+            onClick={() => setShowPixModal(true)}
             className="inline-flex items-center gap-3 px-8 py-4 bg-white text-green-600 font-bold text-lg rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all"
           >
-            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.591-7.305z"/>
+            {/* Ícone PIX */}
+            <svg className="w-6 h-6" viewBox="0 0 512 512" fill="currentColor">
+              <path d="M242.4 292.5C247.8 287.1 257.1 287.1 262.5 292.5L339.5 369.5C353.7 383.7 372.6 391.5 392.6 391.5H407.7L310.6 488.6C280.3 518.1 231.1 518.1 200.8 488.6L103.3 391.2H112.6C132.6 391.2 151.5 383.4 165.7 369.2L242.4 292.5zM262.5 218.9C257.1 224.4 247.9 224.5 242.4 218.9L165.7 142.2C151.5 128 132.6 120.2 112.6 120.2H103.3L200.7 22.76C231.1-7.586 280.3-7.586 310.6 22.76L407.8 119.9H392.6C372.6 119.9 353.7 127.7 339.5 141.9L262.5 218.9zM112.6 142.7C126.4 142.7 139.1 148.3 149.7 158.1L226.4 234.8C233.6 241.1 243 245.6 252.5 245.6C ## 245.6 271.2 241.1 278.4 234.8L201.8 311.4C## 349.2 139.1 368.2 126.4 368.2 112.6V112.6C368.2 112.6 368.2 112.6 368.2 112.6L464 112.6C476.7 112.6 489.1 117.8 498.2 127C507.4 136.1 512.6 148.5 512.6 161.3V161.3C512.6 174 507.4 186.5 498.2 195.6L399.1 294.8C399.1 294.8 399.1 294.8 399.1 294.8L399.1 294.8V294.8C386.4 294.8 374 289.6 364.8 280.4L288.2 203.8C278.1 194.6 265.7 189.4 252.5 189.4c-13.2 0-25.6 5.1-34.8 14.4L141 280.4C131.8 289.6 119.4 294.8 106.7 294.8v0l0 0H48C21.5 294.8 0 273.3 0 246.8v-85.6C0 134.7 21.5 113.2 48 113.2l64.6 0V142.7H112.6z"/>
             </svg>
             Contratar Agora - {fmt(setupTotal + monthlyPrice)}
           </button>
           <p className="text-green-200 text-[10px] mt-3">
-            Pagamento seguro processado pela Stripe • Parcele em até 12x
+            Pagamento instantâneo via PIX • Confirmação imediata
           </p>
         </div>
+        
+        {/* MODAL PIX */}
+        {showPixModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn no-print-button">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+              {/* Header */}
+              <div className="bg-gradient-to-r from-teal-500 to-green-500 p-6 text-center">
+                <div className="w-16 h-16 bg-white rounded-full mx-auto flex items-center justify-center mb-3">
+                  <svg className="w-10 h-10 text-teal-500" viewBox="0 0 512 512" fill="currentColor">
+                    <path d="M242.4 292.5C247.8 287.1 257.1 287.1 262.5 292.5L339.5 369.5C353.7 383.7 372.6 391.5 392.6 391.5H407.7L310.6 488.6C280.3 518.1 231.1 518.1 200.8 488.6L103.3 391.2H112.6C132.6 391.2 151.5 383.4 165.7 369.2L242.4 292.5zM262.5 218.9C257.1 224.4 247.9 224.5 242.4 218.9L165.7 142.2C151.5 128 132.6 120.2 112.6 120.2H103.3L200.7 22.76C231.1-7.586 280.3-7.586 310.6 22.76L407.8 119.9H392.6C372.6 119.9 353.7 127.7 339.5 141.9L262.5 218.9z"/>
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold text-white">Pagamento via PIX</h3>
+                <p className="text-green-100 text-sm mt-1">Copie a chave e realize o pagamento</p>
+              </div>
+              
+              {/* Body */}
+              <div className="p-6">
+                {/* Valor */}
+                <div className="text-center mb-6">
+                  <p className="text-gray-500 text-sm">Valor total a pagar</p>
+                  <p className="text-3xl font-bold text-gray-900">{fmt(setupTotal + monthlyPrice)}</p>
+                  <p className="text-xs text-gray-400 mt-1">Taxa de adesão + 1ª mensalidade</p>
+                </div>
+                
+                {/* Chave PIX */}
+                <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl p-4 mb-4">
+                  <p className="text-xs text-gray-500 uppercase font-bold mb-2 text-center">Chave PIX (CNPJ)</p>
+                  <p className="text-xl font-mono font-bold text-center text-gray-900 tracking-wide">
+                    {PIX_KEY_FORMATTED}
+                  </p>
+                </div>
+                
+                {/* Botão Copiar */}
+                <button
+                  onClick={handleCopyPix}
+                  className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all ${
+                    pixCopied
+                      ? 'bg-green-500 text-white'
+                      : 'bg-teal-500 hover:bg-teal-600 text-white'
+                  }`}
+                >
+                  {pixCopied ? (
+                    <>
+                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                      Chave Copiada!
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      Copiar Chave PIX
+                    </>
+                  )}
+                </button>
+                
+                {/* Instruções */}
+                <div className="mt-4 space-y-2">
+                  <p className="text-xs text-gray-500 text-center font-medium">Como pagar:</p>
+                  <ol className="text-xs text-gray-500 space-y-1">
+                    <li className="flex items-start gap-2">
+                      <span className="w-4 h-4 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-bold">1</span>
+                      Abra o app do seu banco
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="w-4 h-4 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-bold">2</span>
+                      Acesse a área PIX e escolha "Pagar com PIX"
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="w-4 h-4 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-bold">3</span>
+                      Cole a chave CNPJ copiada
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="w-4 h-4 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-bold">4</span>
+                      Digite o valor <strong className="text-gray-700">{fmt(setupTotal + monthlyPrice)}</strong> e confirme
+                    </li>
+                  </ol>
+                </div>
+                
+                {/* Botão Fechar */}
+                <button
+                  onClick={() => setShowPixModal(false)}
+                  className="w-full mt-4 py-3 text-gray-500 hover:text-gray-700 font-medium text-sm transition-colors"
+                >
+                  Fechar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         
         {/* FOOTER */}
         <div className="text-center text-xs text-gray-400 mt-8 pt-4 border-t border-gray-200">
