@@ -1,6 +1,11 @@
 /**
- * PROPOSAL CONFIGURATOR - TYPES v4.0
- * UX Refinement: Rich List Items + Tooltips
+ * PROPOSAL CONFIGURATOR - TYPES v5.0
+ * SISTEMA FLEXÍVEL - Suporta múltiplos modelos de precificação
+ * - Venda por usuário individual
+ * - Preços progressivos por volume
+ * - Modelos: Por Usuário, Por Plano, Híbrido
+ * - Custo base mínimo garantido: R$ 160
+ * - Setup mínimo fixo: R$ 500
  */
 
 // ========================================
@@ -9,6 +14,105 @@
 export const SYSTEM_CONFIG = {
   name: "CRM Partner",
   tagline: "Plataforma de Vendas Inteligente",
+} as const;
+
+// ========================================
+// FINANCIAL RULES - REGRAS DE NEGÓCIO
+// ========================================
+export const FINANCIAL_RULES = {
+  // Setup
+  MIN_SETUP: 500,
+  SETUP_BASE_WA_AI: 500,
+  SETUP_ADDON_PER_FEATURE: 150,
+  
+  // Custo Base (seu custo mínimo)
+  MIN_MONTHLY_COST: 160,  // Abaixo disso = prejuízo
+  
+  // Preço base por usuário (custo interno)
+  BASE_COST_PER_USER: 20,
+  
+  // Custos fixos de módulos
+  AI_AGENT_COST: 60,
+  CONVERSIONS_COST: 20,
+  WHATSAPP_COST: 0, // Incluso na IA
+} as const;
+
+// ========================================
+// PRICING MODELS - MODELOS DE PRECIFICAÇÃO
+// ========================================
+export type PricingModel = "per_user" | "fixed_tier" | "hybrid";
+
+export const PRICING_MODELS = {
+  per_user: { 
+    id: "per_user",
+    label: "Por Usuário", 
+    description: "Preço unitário por usuário com desconto progressivo",
+    icon: "person"
+  },
+  fixed_tier: { 
+    id: "fixed_tier",
+    label: "Pacote Fixo", 
+    description: "Pacotes pré-definidos com quantidade fixa de usuários",
+    icon: "package_2"
+  },
+  hybrid: { 
+    id: "hybrid",
+    label: "Híbrido", 
+    description: "Base fixa + usuários adicionais",
+    icon: "tune"
+  },
+} as const;
+
+// ========================================
+// PREÇO POR USUÁRIO - ESCADA PROGRESSIVA
+// ========================================
+export interface UserPriceRange {
+  minUsers: number;
+  maxUsers: number;
+  pricePerUser: number;
+  discount: number; // Percentual de desconto sobre preço base
+  label: string;
+}
+
+// Preço base: R$ 80 por usuário
+// Desconto progressivo conforme quantidade
+export const USER_PRICE_RANGES: UserPriceRange[] = [
+  { minUsers: 1, maxUsers: 1, pricePerUser: 100, discount: 0, label: "Solo" },
+  { minUsers: 2, maxUsers: 2, pricePerUser: 90, discount: 10, label: "Duo" },
+  { minUsers: 3, maxUsers: 5, pricePerUser: 80, discount: 20, label: "Equipe" },
+  { minUsers: 6, maxUsers: 10, pricePerUser: 70, discount: 30, label: "Business" },
+  { minUsers: 11, maxUsers: 20, pricePerUser: 60, discount: 40, label: "Empresa" },
+  { minUsers: 21, maxUsers: 50, pricePerUser: 50, discount: 50, label: "Corporativo" },
+  { minUsers: 51, maxUsers: 100, pricePerUser: 40, discount: 60, label: "Enterprise" },
+];
+
+// ========================================
+// PACOTES FIXOS (modelo legado compatível)
+// ========================================
+export interface FixedTier {
+  id: string;
+  label: string;
+  maxUsers: number;
+  monthlyPrice: number;
+  linkedPlan: PlanLevel;
+}
+
+export const FIXED_TIERS: FixedTier[] = [
+  { id: "tier_5", label: "Até 5 usuários", maxUsers: 5, monthlyPrice: 400, linkedPlan: "start" },
+  { id: "tier_10", label: "Até 10 usuários", maxUsers: 10, monthlyPrice: 700, linkedPlan: "start" },
+  { id: "tier_20", label: "Até 20 usuários", maxUsers: 20, monthlyPrice: 1200, linkedPlan: "pro" },
+  { id: "tier_30", label: "Até 30 usuários", maxUsers: 30, monthlyPrice: 1600, linkedPlan: "pro" },
+  { id: "tier_50", label: "Até 50 usuários", maxUsers: 50, monthlyPrice: 2500, linkedPlan: "enterprise" },
+  { id: "tier_100", label: "Até 100 usuários", maxUsers: 100, monthlyPrice: 4000, linkedPlan: "enterprise" },
+];
+
+// ========================================
+// MODELO HÍBRIDO
+// ========================================
+export const HYBRID_PRICING = {
+  basePrice: 160,       // Preço base mensal (cobre seu custo mínimo)
+  baseUsers: 1,         // Usuários inclusos no preço base
+  additionalUserPrice: 60, // Preço por usuário adicional
 } as const;
 
 // ========================================
@@ -22,28 +126,31 @@ export const PARTNERSHIP_MODELS = {
 } as const;
 
 // ========================================
-// FINANCIAL RULES
-// ========================================
-export const FINANCIAL_RULES = {
-  SETUP_BASE_WA_AI: 500,
-  SETUP_ADDON_PER_FEATURE: 150,
-  MIN_SETUP: 500,
-} as const;
-
-// ========================================
-// INTERNAL PRICING
-// ========================================
-export const INTERNAL_PRICING = {
-  CRM_PER_USER: 20,
-  AI_AGENT: 60,
-  CONVERSIONS: 20,
-} as const;
-
-// ========================================
 // BASIC TYPES
 // ========================================
 export type PlanLevel = "start" | "pro" | "enterprise";
 export type ThemeMode = "light" | "dark";
+
+// Retrocompatibilidade
+export interface UserTier {
+  id: string;
+  label: string;
+  maxUsers: number;
+  linkedPlan: PlanLevel;
+}
+
+export const USER_TIERS: UserTier[] = FIXED_TIERS.map(t => ({
+  id: t.id,
+  label: t.label,
+  maxUsers: t.maxUsers,
+  linkedPlan: t.linkedPlan
+}));
+
+export const PLAN_PRESETS: Record<PlanLevel, { tierId: string; features: FeatureState }> = {
+  start: { tierId: "tier_5", features: { crm: true, whatsapp: true, ai: false, conversions: false } },
+  pro: { tierId: "tier_20", features: { crm: true, whatsapp: true, ai: false, conversions: true } },
+  enterprise: { tierId: "tier_50", features: { crm: true, whatsapp: true, ai: true, conversions: true } },
+};
 
 // ========================================
 // TOOLTIPS (AJUDA VISUAL)
@@ -67,30 +174,20 @@ export const PRICE_TOOLTIPS = {
   monthly: "Valor mensal recorrente da assinatura do software.",
 } as const;
 
-// ========================================
-// USER TIERS
-// ========================================
-export interface UserTier {
-  id: string;
-  label: string;
-  maxUsers: number;
-  linkedPlan: PlanLevel;
-}
+export const PRICING_MODEL_TOOLTIPS = {
+  per_user: "Ideal para clientes que querem começar pequeno e escalar gradualmente.",
+  fixed_tier: "Melhor custo-benefício para quem já sabe quantos usuários precisa.",
+  hybrid: "Combina preço base fixo + usuários adicionais. Bom para equipes variáveis.",
+} as const;
 
-export const USER_TIERS: UserTier[] = [
-  { id: "tier_5", label: "Até 5 usuários", maxUsers: 5, linkedPlan: "start" },
-  { id: "tier_10", label: "Até 10 usuários", maxUsers: 10, linkedPlan: "start" },
-  { id: "tier_20", label: "Até 20 usuários", maxUsers: 20, linkedPlan: "pro" },
-  { id: "tier_30", label: "Até 30 usuários", maxUsers: 30, linkedPlan: "pro" },
-  { id: "tier_50", label: "Até 50 usuários", maxUsers: 50, linkedPlan: "enterprise" },
-  { id: "tier_100", label: "Até 100 usuários", maxUsers: 100, linkedPlan: "enterprise" },
-];
-
-export const PLAN_PRESETS: Record<PlanLevel, { tierId: string; features: FeatureState }> = {
-  start: { tierId: "tier_5", features: { crm: true, whatsapp: true, ai: false, conversions: false } },
-  pro: { tierId: "tier_20", features: { crm: true, whatsapp: true, ai: false, conversions: true } },
-  enterprise: { tierId: "tier_50", features: { crm: true, whatsapp: true, ai: true, conversions: true } },
-};
+// ========================================
+// INTERNAL PRICING (Retrocompatibilidade)
+// ========================================
+export const INTERNAL_PRICING = {
+  CRM_PER_USER: FINANCIAL_RULES.BASE_COST_PER_USER,
+  AI_AGENT: FINANCIAL_RULES.AI_AGENT_COST,
+  CONVERSIONS: FINANCIAL_RULES.CONVERSIONS_COST,
+} as const;
 
 // ========================================
 // SERVICES + COMPLEXITY (RICH LIST ITEMS)
@@ -147,7 +244,148 @@ export interface PaybackPoint {
 }
 
 // ========================================
-// PURE CALCULATION FUNCTIONS
+// PRICING STATE - Estado para modelo flexível
+// ========================================
+export interface FlexiblePricingState {
+  model: PricingModel;
+  userCount: number;
+  selectedTierId: string | null; // Para modelo fixed_tier
+}
+
+// ========================================
+// NOVAS FUNÇÕES DE CÁLCULO - MODELO FLEXÍVEL
+// ========================================
+
+/**
+ * Retorna o range de preço aplicável para a quantidade de usuários
+ */
+export function getUserPriceRange(userCount: number): UserPriceRange {
+  const range = USER_PRICE_RANGES.find(r => userCount >= r.minUsers && userCount <= r.maxUsers);
+  return range || USER_PRICE_RANGES[USER_PRICE_RANGES.length - 1];
+}
+
+/**
+ * Calcula preço mensal baseado no modelo escolhido
+ */
+export function calculateFlexibleMonthlyPrice(
+  model: PricingModel,
+  userCount: number,
+  features: FeatureState,
+  selectedTierId?: string
+): number {
+  let basePrice = 0;
+  
+  switch (model) {
+    case "per_user": {
+      // Preço por usuário com desconto progressivo
+      const range = getUserPriceRange(userCount);
+      basePrice = range.pricePerUser * userCount;
+      break;
+    }
+    
+    case "fixed_tier": {
+      // Pacote fixo
+      const tier = FIXED_TIERS.find(t => t.id === selectedTierId);
+      basePrice = tier?.monthlyPrice || 400;
+      break;
+    }
+    
+    case "hybrid": {
+      // Base fixa + usuários adicionais
+      const additionalUsers = Math.max(0, userCount - HYBRID_PRICING.baseUsers);
+      basePrice = HYBRID_PRICING.basePrice + (additionalUsers * HYBRID_PRICING.additionalUserPrice);
+      break;
+    }
+  }
+  
+  // Adicionar custos de módulos extras
+  if (features.ai) basePrice += FINANCIAL_RULES.AI_AGENT_COST;
+  if (features.conversions) basePrice += FINANCIAL_RULES.CONVERSIONS_COST;
+  
+  // Garantir custo mínimo
+  return Math.max(basePrice, FINANCIAL_RULES.MIN_MONTHLY_COST);
+}
+
+/**
+ * Calcula custo interno (seu custo real)
+ */
+export function calculateInternalCostFlexible(userCount: number, features: FeatureState): number {
+  let cost = 0;
+  
+  // Custo base por usuário (CRM incluso)
+  if (features.crm) {
+    cost += FINANCIAL_RULES.BASE_COST_PER_USER * userCount;
+  }
+  
+  // Módulos adicionais
+  if (features.ai) cost += FINANCIAL_RULES.AI_AGENT_COST;
+  if (features.conversions) cost += FINANCIAL_RULES.CONVERSIONS_COST;
+  
+  return cost;
+}
+
+/**
+ * Calcula lucro previsto
+ */
+export function calculateProfitFlexible(
+  monthlyPrice: number,
+  userCount: number,
+  features: FeatureState
+): { internalCost: number; profit: number; margin: number } {
+  const internalCost = calculateInternalCostFlexible(userCount, features);
+  const profit = monthlyPrice - internalCost;
+  const margin = monthlyPrice > 0 ? Math.round((profit / monthlyPrice) * 100) : 0;
+  
+  return { internalCost, profit, margin };
+}
+
+/**
+ * Valida se o preço cobre o custo mínimo
+ */
+export function validateMinimumPrice(monthlyPrice: number): { 
+  isValid: boolean; 
+  deficit: number; 
+  message: string;
+} {
+  const minCost = FINANCIAL_RULES.MIN_MONTHLY_COST;
+  const deficit = minCost - monthlyPrice;
+  
+  if (monthlyPrice >= minCost) {
+    return { isValid: true, deficit: 0, message: "✅ Preço sustentável" };
+  }
+  
+  return {
+    isValid: false,
+    deficit,
+    message: `⚠️ Prejuízo de ${formatCurrency(deficit)}/mês - mínimo: ${formatCurrency(minCost)}`
+  };
+}
+
+/**
+ * Formata moeda
+ */
+export function formatCurrency(value: number): string {
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
+}
+
+/**
+ * Gera sugestão de preço ideal baseado no modelo
+ */
+export function getSuggestedPrice(
+  model: PricingModel,
+  userCount: number,
+  features: FeatureState,
+  targetMargin: number = 50 // margem alvo em %
+): number {
+  const internalCost = calculateInternalCostFlexible(userCount, features);
+  const minPrice = FINANCIAL_RULES.MIN_MONTHLY_COST;
+  const idealPrice = internalCost / (1 - targetMargin / 100);
+  
+  return Math.max(minPrice, Math.ceil(idealPrice / 10) * 10);
+}
+
+// ========================================
+// FUNÇÕES LEGADAS (Retrocompatibilidade)
 // ========================================
 
 export function calculateDynamicSetup(features: FeatureState): number {
@@ -161,11 +399,7 @@ export function calculateDynamicSetup(features: FeatureState): number {
 }
 
 export function calculateInternalCost(features: FeatureState, maxUsers: number): number {
-  let cost = 0;
-  if (features.crm) cost += INTERNAL_PRICING.CRM_PER_USER * maxUsers;
-  if (features.ai) cost += INTERNAL_PRICING.AI_AGENT;
-  if (features.conversions) cost += INTERNAL_PRICING.CONVERSIONS;
-  return cost;
+  return calculateInternalCostFlexible(maxUsers, features);
 }
 
 export function calculateServicesTotal(selectedIds: string[]): number {
@@ -191,7 +425,10 @@ export function calculateComplexityPercent(selectedIds: string[]): number {
 export function calculateFinalPrice(base: number, markupPct: number, complexityPct: number): number {
   const withMarkup = base * (1 + markupPct / 100);
   const withComplexity = withMarkup * (1 + complexityPct / 100);
-  return Math.ceil(withComplexity / 10) * 10;
+  const finalPrice = Math.ceil(withComplexity / 10) * 10;
+  
+  // Garantir custo mínimo
+  return Math.max(finalPrice, FINANCIAL_RULES.MIN_MONTHLY_COST);
 }
 
 export function calculateROI(inputs: ROIInputs) {
@@ -222,17 +459,12 @@ export function calculateProfit(model: PartnershipModel, salePrice: number, inte
   return { yourProfit: salePrice * 0.70, boltenFee: salePrice * 0.30 };
 }
 
-/**
- * Gráfico de LUCRO ACUMULADO (Saldo do Cliente)
- * Mês 0: -Setup
- * Mês N: Anterior + (ROI Mensal - Mensalidade)
- */
 export function calculateCumulativeProfit(
   setupCost: number,
   monthlyPrice: number,
   monthlyROI: number
 ): PaybackPoint[] {
-  const setup = Math.max(500, setupCost || 500);
+  const setup = Math.max(FINANCIAL_RULES.MIN_SETUP, setupCost || FINANCIAL_RULES.MIN_SETUP);
   const price = Math.max(0, monthlyPrice || 0);
   const roi = Math.max(0, monthlyROI || 0);
   

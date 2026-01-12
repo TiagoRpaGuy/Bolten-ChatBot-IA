@@ -5,6 +5,10 @@ import {
   PARTNERSHIP_MODELS, FEATURE_TOOLTIPS, ROI_TOOLTIPS, PRICE_TOOLTIPS,
   calculateDynamicSetup, calculateInternalCost, calculateServicesTotal, calculateComplexityPercent,
   calculateFinalPrice, calculateROI, calculateProfit, calculateCumulativeProfit, findPaybackMonth, calculateYearlyProfit,
+  // Novas importações para sistema flexível
+  PricingModel, PRICING_MODELS, USER_PRICE_RANGES, FIXED_TIERS, HYBRID_PRICING, FINANCIAL_RULES,
+  getUserPriceRange, calculateFlexibleMonthlyPrice, calculateInternalCostFlexible, 
+  calculateProfitFlexible, validateMinimumPrice, getSuggestedPrice, PRICING_MODEL_TOOLTIPS,
 } from './types';
 
 // ========================================
@@ -674,15 +678,20 @@ const A4Proposal: React.FC<A4ProposalProps> = ({
 export default function App() {
   const [theme, setTheme] = useState<ThemeMode>('light');
   const [showPrint, setShowPrint] = useState(false);
-  const [activeTab, setActiveTab] = useState<'config' | 'roi'>('config');
+  const [activeTab, setActiveTab] = useState<'config' | 'roi' | 'pricing'>('config');
   
   const [client, setClient] = useState<ClientData>({ companyName: '', contactName: '', email: '' });
   const [plan, setPlan] = useState<PlanLevel>('pro');
   const [tier, setTier] = useState<UserTier>(USER_TIERS[2]);
-  const [features, setFeatures] = useState<FeatureState>({ crm: false, whatsapp: true, ai: true, conversions: false });
+  const [features, setFeatures] = useState<FeatureState>({ crm: true, whatsapp: true, ai: true, conversions: false });
   const [services, setServices] = useState<string[]>(['onboarding']);
   const [partnership, setPartnership] = useState<PartnershipModel>('whitelabel');
   const [markup, setMarkup] = useState(100);
+  
+  // SISTEMA FLEXÍVEL DE PRECIFICAÇÃO
+  const [pricingModel, setPricingModel] = useState<PricingModel>('per_user');
+  const [userCount, setUserCount] = useState(1);  // Usuários individuais
+  const [selectedFixedTier, setSelectedFixedTier] = useState<string>('tier_5');
   
   // INPUTS EDITÁVEIS SEPARADOS
   const [manualSetup, setManualSetup] = useState<number | null>(null);
@@ -690,7 +699,7 @@ export default function App() {
   
   const [roi, setRoi] = useState<ROIInputs>({ ticketMedio: 2000, leadsPerMonth: 100, conversionRate: 5, improvementPercent: 20 });
   
-  // CALCULATIONS
+  // CALCULATIONS (Sistema Legado - mantido para retrocompatibilidade)
   const dynamicSetup = useMemo(() => calculateDynamicSetup(features), [features]);
   const servicesTotal = useMemo(() => calculateServicesTotal(services), [services]);
   const complexityPct = useMemo(() => calculateComplexityPercent(services), [services]);
@@ -698,12 +707,52 @@ export default function App() {
   const calcMonthly = useMemo(() => calculateFinalPrice(baseCost, markup, complexityPct), [baseCost, markup, complexityPct]);
   const roiCalc = useMemo(() => calculateROI(roi), [roi]);
   
+  // NOVO: Cálculos do Sistema Flexível
+  const effectiveUserCount = useMemo(() => {
+    if (pricingModel === 'fixed_tier') {
+      const fixedTier = FIXED_TIERS.find(t => t.id === selectedFixedTier);
+      return fixedTier?.maxUsers || 5;
+    }
+    return userCount;
+  }, [pricingModel, selectedFixedTier, userCount]);
+  
+  const flexibleMonthlyPrice = useMemo(() => 
+    calculateFlexibleMonthlyPrice(pricingModel, effectiveUserCount, features, selectedFixedTier),
+    [pricingModel, effectiveUserCount, features, selectedFixedTier]
+  );
+  
+  const flexibleInternalCost = useMemo(() => 
+    calculateInternalCostFlexible(effectiveUserCount, features),
+    [effectiveUserCount, features]
+  );
+  
+  const flexibleProfit = useMemo(() => 
+    calculateProfitFlexible(flexibleMonthlyPrice, effectiveUserCount, features),
+    [flexibleMonthlyPrice, effectiveUserCount, features]
+  );
+  
+  const priceValidation = useMemo(() => 
+    validateMinimumPrice(flexibleMonthlyPrice),
+    [flexibleMonthlyPrice]
+  );
+  
+  const userPriceRange = useMemo(() => 
+    getUserPriceRange(userCount),
+    [userCount]
+  );
+  
+  const suggestedPrice = useMemo(() => 
+    getSuggestedPrice(pricingModel, effectiveUserCount, features, 50),
+    [pricingModel, effectiveUserCount, features]
+  );
+  
   // VALORES FINAIS (calculado ou manual)
   const calcSetup = dynamicSetup + servicesTotal;
   const finalSetup = manualSetup ?? calcSetup;
-  const finalMonthly = manualMonthly ?? calcMonthly;
+  // Usar preço flexível se modelo não for fixed_tier (legado)
+  const finalMonthly = manualMonthly ?? (pricingModel === 'fixed_tier' ? calcMonthly : flexibleMonthlyPrice);
   
-  const profit = useMemo(() => calculateProfit(partnership, finalMonthly, baseCost), [partnership, finalMonthly, baseCost]);
+  const profit = useMemo(() => calculateProfit(partnership, finalMonthly, flexibleInternalCost), [partnership, finalMonthly, flexibleInternalCost]);
   
   // CUMULATIVE PROFIT CHART
   const profitData = useMemo(() => 
@@ -789,10 +838,10 @@ export default function App() {
         {/* LEFT COLUMN - 4 cols */}
         <div className="lg:col-span-4 flex flex-col gap-3">
           <div className="flex gap-2">
-            {(['config', 'roi'] as const).map(t => (
+            {(['config', 'pricing', 'roi'] as const).map(t => (
               <button key={t} onClick={() => setActiveTab(t)} className={`flex-1 py-2 px-3 text-xs font-medium rounded-lg flex items-center justify-center gap-1.5 ${activeTab === t ? 'bg-blue-600 text-white' : isDark ? 'bg-slate-700 text-slate-400' : 'bg-gray-100 text-gray-500'}`}>
-                <span className="material-symbols-outlined text-sm">{t === 'config' ? 'tune' : 'insights'}</span>
-                {t === 'config' ? 'Config' : 'ROI'}
+                <span className="material-symbols-outlined text-sm">{t === 'config' ? 'tune' : t === 'pricing' ? 'payments' : 'insights'}</span>
+                {t === 'config' ? 'Config' : t === 'pricing' ? 'Preço' : 'ROI'}
               </button>
             ))}
           </div>
@@ -826,6 +875,186 @@ export default function App() {
                       <span className="font-mono opacity-75">{fmt(INTERNAL_PRICING.CRM_PER_USER * t.maxUsers)}</span>
                     </button>
                   ))}
+                </div>
+              </div>
+            </>
+          ) : activeTab === 'pricing' ? (
+            /* PRICING Tab - Sistema Flexível */
+            <>
+              {/* Modelo de Precificação */}
+              <div className={`${card} border rounded-xl p-3`}>
+                <h2 className={`font-semibold text-sm mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                  Modelo de Precificação
+                </h2>
+                <div className="space-y-2">
+                  {(Object.keys(PRICING_MODELS) as PricingModel[]).map(model => {
+                    const m = PRICING_MODELS[model];
+                    return (
+                      <button
+                        key={model}
+                        onClick={() => { setPricingModel(model); setManualMonthly(null); }}
+                        className={`w-full p-3 rounded-lg text-left transition-all ${
+                          pricingModel === model
+                            ? 'bg-blue-600 text-white ring-2 ring-blue-400'
+                            : isDark
+                              ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                              : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="material-symbols-outlined text-base">{m.icon}</span>
+                          <span className="font-medium text-sm">{m.label}</span>
+                        </div>
+                        <p className={`text-[10px] mt-1 ${pricingModel === model ? 'text-blue-100' : isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                          {m.description}
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Configuração de Usuários */}
+              <div className={`${card} border rounded-xl p-3`}>
+                <h2 className={`font-semibold text-sm mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                  {pricingModel === 'fixed_tier' ? 'Pacote de Usuários' : 'Quantidade de Usuários'}
+                </h2>
+                
+                {pricingModel === 'fixed_tier' ? (
+                  /* Seleção de Tier Fixo */
+                  <div className="space-y-1">
+                    {FIXED_TIERS.map(t => (
+                      <button
+                        key={t.id}
+                        onClick={() => { setSelectedFixedTier(t.id); setManualMonthly(null); }}
+                        className={`w-full py-2 px-3 rounded-lg text-left flex justify-between items-center ${
+                          selectedFixedTier === t.id
+                            ? 'bg-blue-600 text-white'
+                            : isDark
+                              ? 'bg-slate-700/50 text-slate-300 hover:bg-slate-600'
+                              : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                        }`}
+                      >
+                        <span className="text-sm">{t.label}</span>
+                        <span className="font-mono text-sm font-bold">{fmt(t.monthlyPrice)}</span>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  /* Seleção por Quantidade */
+                  <div className="space-y-3">
+                    {/* Contador */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setUserCount(Math.max(1, userCount - 1))}
+                        disabled={userCount <= 1}
+                        className={`w-10 h-10 rounded-lg text-lg font-bold transition-all ${
+                          userCount <= 1
+                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                            : isDark
+                              ? 'bg-slate-600 text-white hover:bg-slate-500'
+                              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        }`}
+                      >
+                        −
+                      </button>
+                      <input
+                        type="number"
+                        min={1}
+                        max={100}
+                        value={userCount}
+                        onChange={e => setUserCount(Math.max(1, Math.min(100, +e.target.value || 1)))}
+                        className={`flex-1 text-center text-2xl font-bold py-2 rounded-lg ${input} border`}
+                      />
+                      <button
+                        onClick={() => setUserCount(Math.min(100, userCount + 1))}
+                        disabled={userCount >= 100}
+                        className={`w-10 h-10 rounded-lg text-lg font-bold transition-all ${
+                          userCount >= 100
+                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                            : isDark
+                              ? 'bg-slate-600 text-white hover:bg-slate-500'
+                              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        }`}
+                      >
+                        +
+                      </button>
+                    </div>
+                    
+                    {/* Atalhos */}
+                    <div className="flex gap-1 flex-wrap">
+                      {[1, 2, 3, 5, 10, 20].map(n => (
+                        <button
+                          key={n}
+                          onClick={() => setUserCount(n)}
+                          className={`px-3 py-1 rounded text-xs font-medium transition-all ${
+                            userCount === n
+                              ? 'bg-blue-600 text-white'
+                              : isDark
+                                ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          }`}
+                        >
+                          {n}
+                        </button>
+                      ))}
+                    </div>
+                    
+                    {/* Info do Range */}
+                    <div className={`p-3 rounded-lg ${isDark ? 'bg-slate-700' : 'bg-blue-50'}`}>
+                      <div className="flex justify-between items-center mb-1">
+                        <span className={`text-xs font-bold ${isDark ? 'text-slate-300' : 'text-blue-700'}`}>
+                          {userPriceRange.label}
+                        </span>
+                        {userPriceRange.discount > 0 && (
+                          <span className="text-xs font-bold text-green-500">
+                            -{userPriceRange.discount}% desconto
+                          </span>
+                        )}
+                      </div>
+                      <p className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-blue-600'}`}>
+                        {fmt(userPriceRange.pricePerUser)}/usuário × {userCount} = <strong>{fmt(userPriceRange.pricePerUser * userCount)}</strong>
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Resumo do Preço */}
+              <div className={`${card} border rounded-xl p-3`}>
+                <h2 className={`font-semibold text-sm mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Resumo</h2>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className={isDark ? 'text-slate-400' : 'text-gray-500'}>Usuários</span>
+                    <span className={`font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{effectiveUserCount}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className={isDark ? 'text-slate-400' : 'text-gray-500'}>Custo interno</span>
+                    <span className={`font-mono ${isDark ? 'text-white' : 'text-gray-900'}`}>{fmt(flexibleInternalCost)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className={isDark ? 'text-slate-400' : 'text-gray-500'}>Preço de venda</span>
+                    <span className={`font-bold font-mono ${isDark ? 'text-white' : 'text-gray-900'}`}>{fmt(flexibleMonthlyPrice)}</span>
+                  </div>
+                  <hr className={isDark ? 'border-slate-600' : 'border-gray-200'} />
+                  <div className={`p-2 rounded-lg ${flexibleProfit.profit >= 0 ? (isDark ? 'bg-green-500/20' : 'bg-green-50') : (isDark ? 'bg-red-500/20' : 'bg-red-50')}`}>
+                    <div className="flex justify-between items-center">
+                      <span className={`text-xs font-bold ${flexibleProfit.profit >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                        Seu Lucro Mensal
+                      </span>
+                      <span className={`text-lg font-bold ${flexibleProfit.profit >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                        {fmt(flexibleProfit.profit)}
+                      </span>
+                    </div>
+                    <p className={`text-[10px] mt-0.5 ${flexibleProfit.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      Margem: {flexibleProfit.margin}%
+                    </p>
+                  </div>
+                  
+                  {/* Validação de Preço Mínimo */}
+                  <div className={`p-2 rounded text-xs ${priceValidation.isValid ? (isDark ? 'bg-green-500/10 text-green-400' : 'bg-green-50 text-green-700') : (isDark ? 'bg-red-500/10 text-red-400' : 'bg-red-50 text-red-700')}`}>
+                    {priceValidation.message}
+                  </div>
                 </div>
               </div>
             </>
